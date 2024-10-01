@@ -4,6 +4,47 @@ option csharp_namespace = "UserService";
 
 package userService;
 
-service UserService {
+service UserService{
+  rpc GetUserById(GetUserByIdRequest) returns (UserReply);
+  rpc GetUserByName(GetUserByNameRequest) returns (UserReply);
+  rpc CreateUser(CreateUserRequest) returns (UserReply);
+  rpc UpdateUser(UpdateUserRequest) returns (UserReply);
+  rpc DeleteUser(DeleteUserRequest) returns (UserReply);
+}
 
+message CreateUserRequest{
+  string login = 1;
+  string password = 2;
+  string name = 3;
+  string surname = 4;
+  int32 age = 5;
+}
+
+message GetUserByIdRequest{
+  int32 id = 1;
+}
+
+message GetUserByNameRequest{
+  string name = 1;
+  string surname = 2;
+}
+
+message UpdateUserRequest{
+  string password =1;
+  string name = 2;
+  string surname = 3;
+  int32 age = 4;
+}
+
+message DeleteUserRequest{
+  int32 id = 1;
+}
+
+message UserReply{
+  int32 id = 1; 
+  string login = 2;
+  string password = 3;
+  string name = 4;
+  string surname = 5;
+  int32 age = 6;
 }
