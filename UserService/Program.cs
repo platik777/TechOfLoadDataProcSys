@@ -1,11 +1,20 @@
 using UserService.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CreateHostBuilder(args).Build().Run();
+    }
 
-builder.Services.AddGrpc();
-
-var app = builder.Build();
-
-app.MapGrpcService<UserApiService>();
-
-await app.RunAsync("http://*:5002");
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>()
+                    .ConfigureKestrel(options =>
+                    {
+                        options.ListenAnyIP(5002);
+                    });
+            });
+}

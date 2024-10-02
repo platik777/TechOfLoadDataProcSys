@@ -1,0 +1,7 @@
+﻿CREATE OR REPLACE FUNCTION DeleteUser(p_id INT)
+RETURNS VOID AS
+$$
+BEGIN
+DELETE FROM Users WHERE Id = p_id;
+END;
+$$ LANGUAGE plpgsql;

@@ -1,0 +1,10 @@
+﻿CREATE TABLE Users (
+    Id SERIAL PRIMARY KEY,
+    Login VARCHAR(255) NOT NULL,
+    Password VARCHAR(255) NOT NULL,
+    Name VARCHAR(255) NOT NULL,
+    Surname VARCHAR(255) NOT NULL,
+    Age INT NOT NULL
+);
+
+CREATE UNIQUE INDEX idx_login ON Users(Login);

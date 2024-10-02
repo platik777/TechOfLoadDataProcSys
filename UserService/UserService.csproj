@@ -7,21 +7,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Protobuf Include="Protos\user-service.proto" GrpcServices="Server" />
+        <Protobuf Include="Protos\user-service.proto" GrpcServices="Server" OutputDir="Services" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.57.0"/>
+        <PackageReference Include="Dapper" Version="2.1.35" />
+        <PackageReference Include="FluentValidation" Version="11.10.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.52.0" />
+        <PackageReference Include="Grpc.AspNetCore.Server" Version="2.66.0" />
+        <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.66.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.52.0" PrivateAssets="All" />
+        <PackageReference Include="Google.Protobuf" Version="3.27.0" />
         <PackageReference Include="Npgsql" Version="8.0.4" />
     </ItemGroup>
 
     <ItemGroup>
       <None Remove="Properties\launchSettings.json" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Database\" />
-    </ItemGroup>
-
-
 </Project>
