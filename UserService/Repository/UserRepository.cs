@@ -35,12 +35,8 @@ public class UserRepository : IUserRepository
     {
         using (var connection = _dbService.GetConnection())
         {
-            var query = @"
-            INSERT INTO Users (Login, Password, Name, Surname, Age)
-            VALUES (@Login, @Password, @Name, @Surname, @Age)
-            RETURNING Id";
-        
-            return await connection.ExecuteScalarAsync<int>(query, user); 
+            var query = "SELECT CreateUser(@Login, @Password, @Name, @Surname, @Age)";
+            return await connection.ExecuteScalarAsync<int>(query, user);
         }
     }
 

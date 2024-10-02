@@ -14,6 +14,6 @@ BEGIN
     VALUES (p_login, p_password, p_name, p_surname, p_age)
     RETURNING Id INTO new_id;
 
-    RETURN new_id; 
+    RETURN new_id;
 END;
 $$ LANGUAGE plpgsql;
