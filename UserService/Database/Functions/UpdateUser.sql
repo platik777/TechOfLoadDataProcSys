@@ -2,7 +2,7 @@
 RETURNS VOID AS
 $$
 BEGIN
-UPDATE Users
+UPDATE users
 SET Login = p_login, Password = p_password, Name = p_name, Surname = p_surname, Age = p_age
 WHERE Id = p_id;
 END;

@@ -4,7 +4,7 @@ $$
 BEGIN
 RETURN QUERY
 SELECT Id, Login, Password, Name, Surname, Age
-FROM Users
+FROM users
 WHERE Id = p_id;
 END;
 $$ LANGUAGE plpgsql;
