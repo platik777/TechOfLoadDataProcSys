@@ -30,10 +30,11 @@ message GetUserByNameRequest{
 }
 
 message UpdateUserRequest{
-  string password =1;
-  string name = 2;
-  string surname = 3;
-  int32 age = 4;
+  int32 id = 1;
+  string password = 2;
+  string name = 3;
+  string surname = 4;
+  int32 age = 5;
 }
 
 message DeleteUserRequest{

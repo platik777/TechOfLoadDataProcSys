@@ -29,27 +29,27 @@ namespace UserService {
             "IAEoCRIMCgRuYW1lGAMgASgJEg8KB3N1cm5hbWUYBCABKAkSCwoDYWdlGAUg",
             "ASgFIiAKEkdldFVzZXJCeUlkUmVxdWVzdBIKCgJpZBgBIAEoBSI1ChRHZXRV",
             "c2VyQnlOYW1lUmVxdWVzdBIMCgRuYW1lGAEgASgJEg8KB3N1cm5hbWUYAiAB",
-            "KAkiUQoRVXBkYXRlVXNlclJlcXVlc3QSEAoIcGFzc3dvcmQYASABKAkSDAoE",
-            "bmFtZRgCIAEoCRIPCgdzdXJuYW1lGAMgASgJEgsKA2FnZRgEIAEoBSIfChFE",
-            "ZWxldGVVc2VyUmVxdWVzdBIKCgJpZBgBIAEoBSJkCglVc2VyUmVwbHkSCgoC",
-            "aWQYASABKAUSDQoFbG9naW4YAiABKAkSEAoIcGFzc3dvcmQYAyABKAkSDAoE",
-            "bmFtZRgEIAEoCRIPCgdzdXJuYW1lGAUgASgJEgsKA2FnZRgGIAEoBTLzAgoL",
-            "VXNlclNlcnZpY2USRgoLR2V0VXNlckJ5SWQSHy51c2VyU2VydmljZS5HZXRV",
-            "c2VyQnlJZFJlcXVlc3QaFi51c2VyU2VydmljZS5Vc2VyUmVwbHkSSgoNR2V0",
-            "VXNlckJ5TmFtZRIhLnVzZXJTZXJ2aWNlLkdldFVzZXJCeU5hbWVSZXF1ZXN0",
-            "GhYudXNlclNlcnZpY2UuVXNlclJlcGx5EkQKCkNyZWF0ZVVzZXISHi51c2Vy",
-            "U2VydmljZS5DcmVhdGVVc2VyUmVxdWVzdBoWLnVzZXJTZXJ2aWNlLlVzZXJS",
-            "ZXBseRJECgpVcGRhdGVVc2VyEh4udXNlclNlcnZpY2UuVXBkYXRlVXNlclJl",
-            "cXVlc3QaFi51c2VyU2VydmljZS5Vc2VyUmVwbHkSRAoKRGVsZXRlVXNlchIe",
-            "LnVzZXJTZXJ2aWNlLkRlbGV0ZVVzZXJSZXF1ZXN0GhYudXNlclNlcnZpY2Uu",
-            "VXNlclJlcGx5Qg6qAgtVc2VyU2VydmljZWIGcHJvdG8z"));
+            "KAkiXQoRVXBkYXRlVXNlclJlcXVlc3QSCgoCaWQYASABKAUSEAoIcGFzc3dv",
+            "cmQYAiABKAkSDAoEbmFtZRgDIAEoCRIPCgdzdXJuYW1lGAQgASgJEgsKA2Fn",
+            "ZRgFIAEoBSIfChFEZWxldGVVc2VyUmVxdWVzdBIKCgJpZBgBIAEoBSJkCglV",
+            "c2VyUmVwbHkSCgoCaWQYASABKAUSDQoFbG9naW4YAiABKAkSEAoIcGFzc3dv",
+            "cmQYAyABKAkSDAoEbmFtZRgEIAEoCRIPCgdzdXJuYW1lGAUgASgJEgsKA2Fn",
+            "ZRgGIAEoBTLzAgoLVXNlclNlcnZpY2USRgoLR2V0VXNlckJ5SWQSHy51c2Vy",
+            "U2VydmljZS5HZXRVc2VyQnlJZFJlcXVlc3QaFi51c2VyU2VydmljZS5Vc2Vy",
+            "UmVwbHkSSgoNR2V0VXNlckJ5TmFtZRIhLnVzZXJTZXJ2aWNlLkdldFVzZXJC",
+            "eU5hbWVSZXF1ZXN0GhYudXNlclNlcnZpY2UuVXNlclJlcGx5EkQKCkNyZWF0",
+            "ZVVzZXISHi51c2VyU2VydmljZS5DcmVhdGVVc2VyUmVxdWVzdBoWLnVzZXJT",
+            "ZXJ2aWNlLlVzZXJSZXBseRJECgpVcGRhdGVVc2VyEh4udXNlclNlcnZpY2Uu",
+            "VXBkYXRlVXNlclJlcXVlc3QaFi51c2VyU2VydmljZS5Vc2VyUmVwbHkSRAoK",
+            "RGVsZXRlVXNlchIeLnVzZXJTZXJ2aWNlLkRlbGV0ZVVzZXJSZXF1ZXN0GhYu",
+            "dXNlclNlcnZpY2UuVXNlclJlcGx5Qg6qAgtVc2VyU2VydmljZWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::UserService.CreateUserRequest), global::UserService.CreateUserRequest.Parser, new[]{ "Login", "Password", "Name", "Surname", "Age" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::UserService.GetUserByIdRequest), global::UserService.GetUserByIdRequest.Parser, new[]{ "Id" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::UserService.GetUserByNameRequest), global::UserService.GetUserByNameRequest.Parser, new[]{ "Name", "Surname" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::UserService.UpdateUserRequest), global::UserService.UpdateUserRequest.Parser, new[]{ "Password", "Name", "Surname", "Age" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::UserService.UpdateUserRequest), global::UserService.UpdateUserRequest.Parser, new[]{ "Id", "Password", "Name", "Surname", "Age" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::UserService.DeleteUserRequest), global::UserService.DeleteUserRequest.Parser, new[]{ "Id" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::UserService.UserReply), global::UserService.UserReply.Parser, new[]{ "Id", "Login", "Password", "Name", "Surname", "Age" }, null, null, null, null)
           }));
@@ -844,6 +844,7 @@ namespace UserService {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public UpdateUserRequest(UpdateUserRequest other) : this() {
+      id_ = other.id_;
       password_ = other.password_;
       name_ = other.name_;
       surname_ = other.surname_;
@@ -857,8 +858,20 @@ namespace UserService {
       return new UpdateUserRequest(this);
     }
 
+    /// <summary>Field number for the "id" field.</summary>
+    public const int IdFieldNumber = 1;
+    private int id_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int Id {
+      get { return id_; }
+      set {
+        id_ = value;
+      }
+    }
+
     /// <summary>Field number for the "password" field.</summary>
-    public const int PasswordFieldNumber = 1;
+    public const int PasswordFieldNumber = 2;
     private string password_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -870,7 +883,7 @@ namespace UserService {
     }
 
     /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 2;
+    public const int NameFieldNumber = 3;
     private string name_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -882,7 +895,7 @@ namespace UserService {
     }
 
     /// <summary>Field number for the "surname" field.</summary>
-    public const int SurnameFieldNumber = 3;
+    public const int SurnameFieldNumber = 4;
     private string surname_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -894,7 +907,7 @@ namespace UserService {
     }
 
     /// <summary>Field number for the "age" field.</summary>
-    public const int AgeFieldNumber = 4;
+    public const int AgeFieldNumber = 5;
     private int age_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -920,6 +933,7 @@ namespace UserService {
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (Id != other.Id) return false;
       if (Password != other.Password) return false;
       if (Name != other.Name) return false;
       if (Surname != other.Surname) return false;
@@ -931,6 +945,7 @@ namespace UserService {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
+      if (Id != 0) hash ^= Id.GetHashCode();
       if (Password.Length != 0) hash ^= Password.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (Surname.Length != 0) hash ^= Surname.GetHashCode();
@@ -953,20 +968,24 @@ namespace UserService {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
+      if (Id != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(Id);
+      }
       if (Password.Length != 0) {
-        output.WriteRawTag(10);
+        output.WriteRawTag(18);
         output.WriteString(Password);
       }
       if (Name.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(26);
         output.WriteString(Name);
       }
       if (Surname.Length != 0) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(34);
         output.WriteString(Surname);
       }
       if (Age != 0) {
-        output.WriteRawTag(32);
+        output.WriteRawTag(40);
         output.WriteInt32(Age);
       }
       if (_unknownFields != null) {
@@ -979,20 +998,24 @@ namespace UserService {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Id != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(Id);
+      }
       if (Password.Length != 0) {
-        output.WriteRawTag(10);
+        output.WriteRawTag(18);
         output.WriteString(Password);
       }
       if (Name.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(26);
         output.WriteString(Name);
       }
       if (Surname.Length != 0) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(34);
         output.WriteString(Surname);
       }
       if (Age != 0) {
-        output.WriteRawTag(32);
+        output.WriteRawTag(40);
         output.WriteInt32(Age);
       }
       if (_unknownFields != null) {
@@ -1005,6 +1028,9 @@ namespace UserService {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
+      if (Id != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
+      }
       if (Password.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Password);
       }
@@ -1028,6 +1054,9 @@ namespace UserService {
     public void MergeFrom(UpdateUserRequest other) {
       if (other == null) {
         return;
+      }
+      if (other.Id != 0) {
+        Id = other.Id;
       }
       if (other.Password.Length != 0) {
         Password = other.Password;
@@ -1056,19 +1085,23 @@ namespace UserService {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            Password = input.ReadString();
+          case 8: {
+            Id = input.ReadInt32();
             break;
           }
           case 18: {
-            Name = input.ReadString();
+            Password = input.ReadString();
             break;
           }
           case 26: {
+            Name = input.ReadString();
+            break;
+          }
+          case 34: {
             Surname = input.ReadString();
             break;
           }
-          case 32: {
+          case 40: {
             Age = input.ReadInt32();
             break;
           }
@@ -1087,19 +1120,23 @@ namespace UserService {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 10: {
-            Password = input.ReadString();
+          case 8: {
+            Id = input.ReadInt32();
             break;
           }
           case 18: {
-            Name = input.ReadString();
+            Password = input.ReadString();
             break;
           }
           case 26: {
+            Name = input.ReadString();
+            break;
+          }
+          case 34: {
             Surname = input.ReadString();
             break;
           }
-          case 32: {
+          case 40: {
             Age = input.ReadInt32();
             break;
           }
