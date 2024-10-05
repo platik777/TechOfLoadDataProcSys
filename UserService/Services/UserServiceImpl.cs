@@ -75,4 +75,31 @@ public class UserServiceImpl : UserService.UserServiceBase
             Age = user.Age
         };
     }
+
+    public override async Task<UserReply> UpdateUser(UpdateUserRequest request, ServerCallContext context)
+    {
+        var existingUser = await GetUserById(new GetUserByIdRequest { Id = request.Id }, context);
+
+        var updatedUser = new User
+        {
+            Login = existingUser.Login,
+            Password = request.Password,
+            Name = request.Name,
+            Surname = request.Surname,
+            Age = request.Age
+        };
+
+        await _userRepository.UpdateAsync(updatedUser);
+
+        return new UserReply
+        {
+            Id = updatedUser.Id,
+            Login = updatedUser.Login,
+            Password = updatedUser.Password,
+            Name = updatedUser.Name,
+            Surname = updatedUser.Surname,
+            Age = updatedUser.Age
+        };
+    }
+
 }

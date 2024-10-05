@@ -2,6 +2,6 @@
 RETURNS VOID AS
 $$
 BEGIN
-DELETE FROM Users WHERE Id = p_id;
+DELETE FROM users WHERE Id = p_id;
 END;
 $$ LANGUAGE plpgsql;

@@ -10,7 +10,7 @@ $$
 DECLARE
     new_id INT;
 BEGIN
-    INSERT INTO Users (Login, Password, Name, Surname, Age)
+    INSERT INTO users (Login, Password, Name, Surname, Age)
     VALUES (p_login, p_password, p_name, p_surname, p_age)
     RETURNING Id INTO new_id;
 
