@@ -76,6 +76,7 @@ public class UserServiceImpl : UserService.UserServiceBase
         };
     }
 
+    // Редактировать пользователя 
     public override async Task<UserReply> UpdateUser(UpdateUserRequest request, ServerCallContext context)
     {
         var existingUser = await GetUserById(new GetUserByIdRequest { Id = request.Id }, context);
