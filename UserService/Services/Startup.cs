@@ -12,7 +12,6 @@ public class Startup
         
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<DbService>();
-        services.AddScoped<PasswordEncoder>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

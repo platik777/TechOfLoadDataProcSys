@@ -8,12 +8,10 @@ namespace UserService.Services;
 public class UserServiceImpl : UserService.UserServiceBase
 {
    private readonly IUserRepository _userRepository;
-   private readonly PasswordEncoder _passwordEncoder;
    
-   public UserServiceImpl(IUserRepository userRepository, PasswordEncoder passwordEncoder)
+   public UserServiceImpl(IUserRepository userRepository)
    {
        _userRepository = userRepository;
-       _passwordEncoder = passwordEncoder;
    }
 
    public override async Task<UserListReply> GetAllUsers(GetAllUsersRequest request, ServerCallContext context)
