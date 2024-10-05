@@ -10,6 +10,7 @@ service UserService{
   rpc CreateUser(CreateUserRequest) returns (UserReply);
   rpc UpdateUser(UpdateUserRequest) returns (UserReply);
   rpc DeleteUser(DeleteUserRequest) returns (UserReply);
+  rpc GetAllUsers(GetAllUsersRequest) returns (GetAllUsersReply);
 }
 
 message CreateUserRequest{
@@ -41,6 +42,10 @@ message DeleteUserRequest{
   int32 id = 1;
 }
 
+message GetAllUsersRequest{
+  
+}
+
 message UserReply{
   int32 id = 1; 
   string login = 2;
@@ -48,4 +53,8 @@ message UserReply{
   string name = 4;
   string surname = 5;
   int32 age = 6;
+}
+
+message GetAllUsersReply {
+  repeated UserReply users = 1;
 }
