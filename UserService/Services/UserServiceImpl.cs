@@ -94,10 +94,10 @@ public class UserServiceImpl : UserService.UserServiceBase
     public override async Task<UserReply> UpdateUser(UpdateUserRequest request, ServerCallContext context)
     {
         var existingUser = _userRepository.GetByIdAsync(request.Id).Result;
-        existingUser.Name = request.Name;
-        existingUser.Surname = request.Surname;
-        existingUser.Password = PasswordEncoder.HashPassword(request.Password);
-        existingUser.Age = request.Age;
+        existingUser.Name = request.Name ?? existingUser.Name;
+        existingUser.Surname = request.Surname ?? existingUser.Surname;
+        existingUser.Password = request.Password == null ? existingUser.Password : PasswordEncoder.HashPassword(request.Password);
+        existingUser.Age = request.Age == existingUser.Age ? existingUser.Age : request.Age;
         
         var userUpdateValidator = new UserUpdateValidator();
 
