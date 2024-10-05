@@ -93,31 +93,26 @@ public class UserServiceImpl : UserService.UserServiceBase
     
     public override async Task<UserReply> UpdateUser(UpdateUserRequest request, ServerCallContext context)
     {
-        var existingUser = await GetUserById(new GetUserByIdRequest { Id = request.Id }, context);
-
-        var updatedUser = new User
-        {
-            Login = existingUser.Login,
-            Password = request.Password,
-            Name = request.Name,
-            Surname = request.Surname,
-            Age = request.Age
-        };
+        var existingUser = _userRepository.GetByIdAsync(request.Id).Result;
+        existingUser.Name = request.Name;
+        existingUser.Surname = request.Surname;
+        existingUser.Password = PasswordEncoder.HashPassword(request.Password);
+        existingUser.Age = request.Age;
         
         var userUpdateValidator = new UserUpdateValidator();
 
-        await userUpdateValidator.ValidateAsync(updatedUser);
+        await userUpdateValidator.ValidateAsync(existingUser);
 
-        await _userRepository.UpdateAsync(updatedUser);
+        await _userRepository.UpdateAsync(existingUser);
 
         return new UserReply
         {
             Id = existingUser.Id,
-            Login = updatedUser.Login,
-            Password = updatedUser.Password,
-            Name = updatedUser.Name,
-            Surname = updatedUser.Surname,
-            Age = updatedUser.Age
+            Login = existingUser.Login,
+            Password = existingUser.Password,
+            Name = existingUser.Name,
+            Surname = existingUser.Surname,
+            Age = existingUser.Age
         };
     }
     
