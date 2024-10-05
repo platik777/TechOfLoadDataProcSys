@@ -1,7 +1,6 @@
 ﻿namespace UserService.Services;
 
-using Npgsql;
-using Dapper;
+using Npgsql;   
 
 public class DbService
 {

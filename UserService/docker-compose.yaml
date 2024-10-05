@@ -13,3 +13,7 @@ services:
     volumes:
       - ./Database/Migrations/Init_Db.sql:/docker-entrypoint-initdb.d/Init_Db.sql
       - ./Database/Functions/CreateUser.sql:/docker-entrypoint-initdb.d/CreateUser.sql
+      - ./Database/Functions/DeleteUser.sql:/docker-entrypoint-initdb.d/DeleteUser.sql
+      - ./Database/Functions/GetAllUsers.sql:/docker-entrypoint-initdb.d/GetAllUsers.sql
+      - ./Database/Functions/GetUserById.sql:/docker-entrypoint-initdb.d/GetUserById.sql
+      - ./Database/Functions/UpdateUser.sql:/docker-entrypoint-initdb.d/UpdateUser.sql
