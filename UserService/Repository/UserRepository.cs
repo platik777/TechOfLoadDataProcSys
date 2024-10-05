@@ -44,7 +44,7 @@ public class UserRepository : IUserRepository
     {
         using (var connection = _dbService.GetConnection())
         {
-            var query = "SELECT UpdateUser(@Id, @Login, @Password, @Name, @Surname, @Age)";
+            var query = "SELECT UpdateUser(@Id, @Password, @Name, @Surname, @Age)";
             await connection.ExecuteAsync(query, user);
         }
     }
@@ -55,6 +55,24 @@ public class UserRepository : IUserRepository
         {
             var query = "SELECT DeleteUser(@Id)";
             await connection.ExecuteAsync(query, new { Id = id });
+        }
+    }
+
+    public async Task<IEnumerable<User>> GetByNameAsync(string name)
+    {
+        using (var connection = _dbService.GetConnection())
+        {
+            var query = "SELECT * FROM GetUserByName(@Name)";
+            return await connection.QueryAsync<User>(query, new { Name = name });
+        }
+    }
+
+    public async Task<IEnumerable<User>> GetBySurnameAsync(string surname)
+    {
+        using (var connection = _dbService.GetConnection())
+        {
+            var query = "SELECT * FROM GetUserBySurname(@Surname)";
+            return await connection.QueryAsync<User>(query, new { Surname = surname });
         }
     }
 }

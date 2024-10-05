@@ -3,7 +3,7 @@ RETURNS TABLE(id INT, login VARCHAR, password VARCHAR, name VARCHAR, surname VAR
 $$
 BEGIN
 RETURN QUERY
-SELECT Id, Login, Password, Name, Surname, Age
+SELECT *
 FROM users;
 END;
 $$ LANGUAGE plpgsql;

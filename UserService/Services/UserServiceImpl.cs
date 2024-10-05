@@ -1,24 +1,26 @@
 ﻿using Grpc.Core;
 using UserService.Models;
 using UserService.Repository;
+using UserService.Services.Utils;
 using UserService.Services.Validators;
 
 namespace UserService.Services;
 public class UserServiceImpl : UserService.UserServiceBase
 {
    private readonly IUserRepository _userRepository;
+   private readonly PasswordEncoder _passwordEncoder;
    
-   public UserServiceImpl(IUserRepository userRepository)
-   { 
+   public UserServiceImpl(IUserRepository userRepository, PasswordEncoder passwordEncoder)
+   {
        _userRepository = userRepository;
+       _passwordEncoder = passwordEncoder;
    }
 
-   // Получить всех пользователей
-   public override async Task<GetAllUsersReply> GetAllUsers(GetAllUsersRequest request, ServerCallContext context)
+   public override async Task<UserListReply> GetAllUsers(GetAllUsersRequest request, ServerCallContext context)
    {
        var users = await _userRepository.GetAllAsync();
        
-       var reply = new GetAllUsersReply();
+       var reply = new UserListReply();
 
        foreach (var user in users)
        {
@@ -36,7 +38,6 @@ public class UserServiceImpl : UserService.UserServiceBase
        return reply;
    }
 
-   // Получить пользователя по ID
     public override async Task<UserReply> GetUserById(GetUserByIdRequest request, ServerCallContext context)
     {
         var user = await _userRepository.GetByIdAsync(request.Id);
@@ -55,13 +56,12 @@ public class UserServiceImpl : UserService.UserServiceBase
         };
     }
 
-    // Создать пользователя
     public override async Task<UserReply> CreateUser(CreateUserRequest request, ServerCallContext context)
     {
         var user = new User
         {
             Login = request.Login,
-            Password = request.Password,
+            Password = PasswordEncoder.HashPassword(request.Password),
             Name = request.Name,
             Surname = request.Surname,
             Age = request.Age
@@ -83,7 +83,14 @@ public class UserServiceImpl : UserService.UserServiceBase
         };
     }
     
-    // Обновить пользователя
+    /*{
+        "login": "login",
+        "password": "pass",
+        "name": "dima",
+        "surname": "borisov",
+        "age": 20
+    }*/
+    
     public override async Task<UserReply> UpdateUser(UpdateUserRequest request, ServerCallContext context)
     {
         var existingUser = await GetUserById(new GetUserByIdRequest { Id = request.Id }, context);
@@ -105,7 +112,7 @@ public class UserServiceImpl : UserService.UserServiceBase
 
         return new UserReply
         {
-            Id = updatedUser.Id,
+            Id = existingUser.Id,
             Login = updatedUser.Login,
             Password = updatedUser.Password,
             Name = updatedUser.Name,
@@ -114,7 +121,6 @@ public class UserServiceImpl : UserService.UserServiceBase
         };
     }
     
-    // Удалить пользователя
     public override async Task<UserReply> DeleteUser(DeleteUserRequest request, ServerCallContext context)
     {
         var user = await _userRepository.GetByIdAsync(request.Id);
@@ -134,4 +140,45 @@ public class UserServiceImpl : UserService.UserServiceBase
             Age = user.Age
         };
     }
+    
+    public override async Task<UserListReply> GetUserByName(GetUserByNameRequest request, ServerCallContext context)
+    {
+        var users = await _userRepository.GetByNameAsync(request.Name);
+    
+        var userListReply = new UserListReply();
+        foreach (var user in users)
+        {
+            userListReply.Users.Add(new UserReply
+            {
+                Id = user.Id,
+                Login = user.Login,
+                Name = user.Name,
+                Surname = user.Surname,
+                Age = user.Age
+            });
+        }
+
+        return userListReply;
+    }
+    
+    public override async Task<UserListReply> GetUserBySurname(GetUserBySurnameRequest request, ServerCallContext context)
+    {
+        var users = await _userRepository.GetBySurnameAsync(request.Surname);
+    
+        var userListReply = new UserListReply();
+        foreach (var user in users)
+        {
+            userListReply.Users.Add(new UserReply
+            {
+                Id = user.Id,
+                Login = user.Login,
+                Name = user.Name,
+                Surname = user.Surname,
+                Age = user.Age
+            });
+        }
+
+        return userListReply;
+    }
+
 }

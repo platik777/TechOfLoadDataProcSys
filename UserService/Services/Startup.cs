@@ -1,4 +1,5 @@
 ﻿using UserService.Repository;
+using UserService.Services.Utils;
 
 namespace UserService.Services;
 
@@ -11,6 +12,7 @@ public class Startup
         
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<DbService>();
+        services.AddScoped<PasswordEncoder>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

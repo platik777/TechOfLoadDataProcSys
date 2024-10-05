@@ -6,11 +6,12 @@ package userService;
 
 service UserService{
   rpc GetUserById(GetUserByIdRequest) returns (UserReply);
-  rpc GetUserByName(GetUserByNameRequest) returns (UserReply);
+  rpc GetUserByName(GetUserByNameRequest) returns (UserListReply);
+  rpc GetUserBySurname(GetUserBySurnameRequest) returns (UserListReply);
   rpc CreateUser(CreateUserRequest) returns (UserReply);
   rpc UpdateUser(UpdateUserRequest) returns (UserReply);
   rpc DeleteUser(DeleteUserRequest) returns (UserReply);
-  rpc GetAllUsers(GetAllUsersRequest) returns (GetAllUsersReply);
+  rpc GetAllUsers(GetAllUsersRequest) returns (UserListReply);
 }
 
 message CreateUserRequest{
@@ -27,7 +28,10 @@ message GetUserByIdRequest{
 
 message GetUserByNameRequest{
   string name = 1;
-  string surname = 2;
+}
+
+message GetUserBySurnameRequest{
+  string surname = 1;
 }
 
 message UpdateUserRequest{
@@ -42,9 +46,7 @@ message DeleteUserRequest{
   int32 id = 1;
 }
 
-message GetAllUsersRequest{
-  
-}
+message GetAllUsersRequest{}
 
 message UserReply{
   int32 id = 1; 
@@ -55,6 +57,6 @@ message UserReply{
   int32 age = 6;
 }
 
-message GetAllUsersReply {
+message UserListReply {
   repeated UserReply users = 1;
 }
