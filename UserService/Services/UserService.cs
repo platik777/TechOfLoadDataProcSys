@@ -5,7 +5,7 @@ using UserService.Services.Utils;
 using UserService.Services.Validators;
 
 namespace UserService.Services;
-public class UserService : global::UserService.UserService.UserServiceBase
+public class UserService
 {
    private readonly IUserRepository _userRepository;
    private readonly UserCreateValidator _userCreateValidator;
@@ -21,7 +21,7 @@ public class UserService : global::UserService.UserService.UserServiceBase
        _userUpdateValidator = userUpdateValidator;
    }
 
-   public override async Task<UserListReply> GetAllUsers(GetAllUsersRequest request, ServerCallContext context)
+   public async Task<UserListReply> GetAllUsers()
    {
        var users = await _userRepository.GetAllAsync();
        
@@ -43,7 +43,7 @@ public class UserService : global::UserService.UserService.UserServiceBase
        return reply;
    }
 
-    public override async Task<UserReply> GetUserById(GetUserByIdRequest request, ServerCallContext context)
+    public async Task<UserReply> GetUserById(GetUserByIdRequest request)
     {
         var user = await _userRepository.GetByIdAsync(request.Id);
         if (user == null)
@@ -61,7 +61,7 @@ public class UserService : global::UserService.UserService.UserServiceBase
         };
     }
 
-    public override async Task<UserReply> CreateUser(CreateUserRequest request, ServerCallContext context)
+    public async Task<UserReply> CreateUser(CreateUserRequest request)
     {
         var user = new User
         {
@@ -100,7 +100,7 @@ public class UserService : global::UserService.UserService.UserServiceBase
         "age": 20
     }*/
     
-    public override async Task<UserReply> UpdateUser(UpdateUserRequest request, ServerCallContext context)
+    public async Task<UserReply> UpdateUser(UpdateUserRequest request)
     {
         var existingUser = _userRepository.GetByIdAsync(request.Id).Result;
         
@@ -130,7 +130,7 @@ public class UserService : global::UserService.UserService.UserServiceBase
         };
     }
     
-    public override async Task<UserReply> DeleteUser(DeleteUserRequest request, ServerCallContext context)
+    public async Task<UserReply> DeleteUser(DeleteUserRequest request)
     {
         var user = await _userRepository.GetByIdAsync(request.Id);
         if (user == null)
@@ -150,7 +150,7 @@ public class UserService : global::UserService.UserService.UserServiceBase
         };
     }
     
-    public override async Task<UserListReply> GetUserByName(GetUserByNameRequest request, ServerCallContext context)
+    public async Task<UserListReply> GetUserByName(GetUserByNameRequest request)
     {
         var users = await _userRepository.GetByNameAsync(request.Name);
     
@@ -170,7 +170,7 @@ public class UserService : global::UserService.UserService.UserServiceBase
         return userListReply;
     }
     
-    public override async Task<UserListReply> GetUserBySurname(GetUserBySurnameRequest request, ServerCallContext context)
+    public async Task<UserListReply> GetUserBySurname(GetUserBySurnameRequest request)
     {
         var users = await _userRepository.GetBySurnameAsync(request.Surname);
     
@@ -189,5 +189,4 @@ public class UserService : global::UserService.UserService.UserServiceBase
 
         return userListReply;
     }
-
 }

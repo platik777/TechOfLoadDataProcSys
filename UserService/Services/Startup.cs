@@ -15,6 +15,7 @@ public class Startup
         services.AddSingleton<DbService>();
         services.AddSingleton<UserCreateValidator>();
         services.AddSingleton<UserUpdateValidator>();
+        services.AddScoped<UserService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -28,7 +29,7 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapGrpcService<UserService>();
+            endpoints.MapGrpcService<UserServiceGrps>();
             endpoints.MapGrpcReflectionService();
         });
     }
