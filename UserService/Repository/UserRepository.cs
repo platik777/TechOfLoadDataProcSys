@@ -17,8 +17,11 @@ public class UserRepository : IUserRepository
     {
         using (var connection = _dbService.GetConnection())
         {
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id);
+            
             var query = "SELECT * FROM GetUserById(@Id)";
-            return await connection.QueryFirstOrDefaultAsync<User>(query, new { Id = id });
+            return await connection.QueryFirstOrDefaultAsync<User>(query, parameters);
         }
     }
 
@@ -35,8 +38,15 @@ public class UserRepository : IUserRepository
     {
         using (var connection = _dbService.GetConnection())
         {
+            var parameters = new DynamicParameters();
+            parameters.Add("Login", user.Login);
+            parameters.Add("Password", user.Password);
+            parameters.Add("Name", user.Name);
+            parameters.Add("Surname", user.Surname);
+            parameters.Add("Age", user.Age);
+
             var query = "SELECT CreateUser(@Login, @Password, @Name, @Surname, @Age)";
-            return await connection.ExecuteScalarAsync<int>(query, user);
+            return await connection.ExecuteScalarAsync<int>(query, parameters);
         }
     }
 
@@ -44,8 +54,15 @@ public class UserRepository : IUserRepository
     {
         using (var connection = _dbService.GetConnection())
         {
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", user.Id);
+            parameters.Add("Password", user.Password);
+            parameters.Add("Name", user.Name);
+            parameters.Add("Surname", user.Surname);
+            parameters.Add("Age", user.Age);
+
             var query = "SELECT UpdateUser(@Id, @Password, @Name, @Surname, @Age)";
-            await connection.ExecuteAsync(query, user);
+            await connection.ExecuteAsync(query, parameters);
         }
     }
 
@@ -53,26 +70,37 @@ public class UserRepository : IUserRepository
     {
         using (var connection = _dbService.GetConnection())
         {
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id);
+
             var query = "SELECT DeleteUser(@Id)";
-            await connection.ExecuteAsync(query, new { Id = id });
+            await connection.ExecuteAsync(query, parameters);
         }
     }
 
-    public async Task<IEnumerable<User>> GetByNameAsync(string name)
+    public async Task<List<User>> GetByNameAsync(string name)
     {
         using (var connection = _dbService.GetConnection())
         {
+            var parameters = new DynamicParameters();
+            parameters.Add("Name", name);
+
             var query = "SELECT * FROM GetUserByName(@Name)";
-            return await connection.QueryAsync<User>(query, new { Name = name });
+            var result = await connection.QueryAsync<User>(query, parameters);
+            return result.ToList(); 
         }
     }
 
-    public async Task<IEnumerable<User>> GetBySurnameAsync(string surname)
+    public async Task<List<User>> GetBySurnameAsync(string surname)
     {
         using (var connection = _dbService.GetConnection())
         {
+            var parameters = new DynamicParameters();
+            parameters.Add("Surname", surname);
+
             var query = "SELECT * FROM GetUserBySurname(@Surname)";
-            return await connection.QueryAsync<User>(query, new { Surname = surname });
+            var result = await connection.QueryAsync<User>(query, parameters);
+            return result.ToList();
         }
     }
 }

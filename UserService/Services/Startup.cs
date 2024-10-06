@@ -1,5 +1,6 @@
 ﻿using UserService.Repository;
 using UserService.Services.Utils;
+using UserService.Services.Validators;
 
 namespace UserService.Services;
 
@@ -10,8 +11,10 @@ public class Startup
         services.AddGrpc();
         services.AddGrpcReflection();
         
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<DbService>();
+        services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddSingleton<DbService>();
+        services.AddSingleton<UserCreateValidator>();
+        services.AddSingleton<UserUpdateValidator>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -25,7 +28,7 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapGrpcService<UserServiceImpl>();
+            endpoints.MapGrpcService<UserService>();
             endpoints.MapGrpcReflectionService();
         });
     }

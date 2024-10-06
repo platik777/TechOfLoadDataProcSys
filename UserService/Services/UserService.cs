@@ -5,13 +5,20 @@ using UserService.Services.Utils;
 using UserService.Services.Validators;
 
 namespace UserService.Services;
-public class UserServiceImpl : UserService.UserServiceBase
+public class UserService : global::UserService.UserService.UserServiceBase
 {
    private readonly IUserRepository _userRepository;
+   private readonly UserCreateValidator _userCreateValidator;
+   private readonly UserUpdateValidator _userUpdateValidator;
    
-   public UserServiceImpl(IUserRepository userRepository)
+   public UserService(
+       IUserRepository userRepository,
+       UserCreateValidator userCreateValidator,
+       UserUpdateValidator userUpdateValidator)
    {
        _userRepository = userRepository;
+       _userCreateValidator = userCreateValidator;
+       _userUpdateValidator = userUpdateValidator;
    }
 
    public override async Task<UserListReply> GetAllUsers(GetAllUsersRequest request, ServerCallContext context)
@@ -59,16 +66,20 @@ public class UserServiceImpl : UserService.UserServiceBase
         var user = new User
         {
             Login = request.Login,
-            Password = PasswordEncoder.HashPassword(request.Password),
+            Password = request.Password,
             Name = request.Name,
             Surname = request.Surname,
             Age = request.Age
         };
 
-        var userCreateValidator = new UserCreateValidator();
+        var validationResult = _userCreateValidator.Validate(user);
+        if (!validationResult.IsValid)
+        {
+            var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+            throw new RpcException(new Status(StatusCode.InvalidArgument, errors));
+        }
 
-        await userCreateValidator.ValidateAsync(user);
-
+        user.Password = PasswordEncoder.HashPassword(request.Password); 
         var userId = await _userRepository.CreateUserAsync(user);  
         
         return new UserReply
@@ -95,13 +106,17 @@ public class UserServiceImpl : UserService.UserServiceBase
         
         existingUser.Name = request.Name == "" ? existingUser.Name : request.Name;
         existingUser.Surname = request.Surname == "" ? existingUser.Surname : request.Surname;
-        existingUser.Password = request.Password == "" ? existingUser.Password : PasswordEncoder.HashPassword(request.Password);
+        existingUser.Password = request.Password == "" ? existingUser.Password : request.Password;
         existingUser.Age = request.Age == 0 ? existingUser.Age : request.Age;
-        
-        var userUpdateValidator = new UserUpdateValidator();
 
-        await userUpdateValidator.ValidateAsync(existingUser);
+        var validationResult = _userUpdateValidator.Validate(existingUser);
+        if (!validationResult.IsValid)
+        {
+            var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+            throw new RpcException(new Status(StatusCode.InvalidArgument, errors));
+        }
 
+        existingUser.Password = PasswordEncoder.HashPassword(request.Password);
         await _userRepository.UpdateAsync(existingUser);
 
         return new UserReply

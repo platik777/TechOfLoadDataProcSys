@@ -9,6 +9,6 @@ public interface IUserRepository
     public Task<int> CreateUserAsync(User user);
     public Task UpdateAsync(User user);
     public Task DeleteAsync(int id);
-    public Task<IEnumerable<User>> GetByNameAsync(string name);
-    public Task<IEnumerable<User>> GetBySurnameAsync(string surname);
+    public Task<List<User>> GetByNameAsync(string name);
+    public Task<List<User>> GetBySurnameAsync(string surname);
 }
