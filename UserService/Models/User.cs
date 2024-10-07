@@ -1,4 +1,6 @@
-﻿namespace UserService.Models;
+﻿using UserService.Database.Entities;
+
+namespace UserService.Models;
 
 public class User
 {
@@ -8,4 +10,25 @@ public class User
     public string? Name { get; set; }
     public string? Surname { get; set; }
     public int Age { get; set; }
+
+    public User() { }
+
+    public User(string login, string password, string name, string surname, int age)
+    {
+        Login = login;
+        Password = password;
+        Name = name;
+        Surname = surname;
+        Age = age;
+    }
+
+    public User(UserEntity userEntity)
+    {
+        Id = userEntity.Id;
+        Login = userEntity.Login;
+        Password = userEntity.Password;
+        Name = userEntity.Name;
+        Surname = userEntity.Surname;
+        Age = userEntity.Age;
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using UserService.Database.Entities;
 using UserService.Models;
 using UserService.Services;
 
@@ -13,7 +14,7 @@ public class UserRepository : IUserRepository
         _dbService = dbService;
     }
 
-    public async Task<User> GetByIdAsync(int id)
+    public async Task<UserEntity> GetByIdAsync(int id)
     {
         using (var connection = _dbService.GetConnection())
         {
@@ -21,16 +22,16 @@ public class UserRepository : IUserRepository
             parameters.Add("Id", id);
             
             var query = "SELECT * FROM GetUserById(@Id)";
-            return await connection.QueryFirstOrDefaultAsync<User>(query, parameters);
+            return await connection.QueryFirstOrDefaultAsync<UserEntity>(query, parameters);
         }
     }
 
-    public async Task<IEnumerable<User>> GetAllAsync()
+    public async Task<IEnumerable<UserEntity>> GetAllAsync()
     {
         using (var connection = _dbService.GetConnection())
         {
             var query = "SELECT * FROM getAllUsers()";
-            return await connection.QueryAsync<User>(query);
+            return await connection.QueryAsync<UserEntity>(query);
         }
     }
 
@@ -78,7 +79,7 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public async Task<List<User>> GetByNameAsync(string name)
+    public async Task<List<UserEntity>> GetByNameAsync(string name)
     {
         using (var connection = _dbService.GetConnection())
         {
@@ -86,12 +87,12 @@ public class UserRepository : IUserRepository
             parameters.Add("Name", name);
 
             var query = "SELECT * FROM GetUserByName(@Name)";
-            var result = await connection.QueryAsync<User>(query, parameters);
+            var result = await connection.QueryAsync<UserEntity>(query, parameters);
             return result.ToList(); 
         }
     }
 
-    public async Task<List<User>> GetBySurnameAsync(string surname)
+    public async Task<List<UserEntity>> GetBySurnameAsync(string surname)
     {
         using (var connection = _dbService.GetConnection())
         {
@@ -99,7 +100,7 @@ public class UserRepository : IUserRepository
             parameters.Add("Surname", surname);
 
             var query = "SELECT * FROM GetUserBySurname(@Surname)";
-            var result = await connection.QueryAsync<User>(query, parameters);
+            var result = await connection.QueryAsync<UserEntity>(query, parameters);
             return result.ToList();
         }
     }

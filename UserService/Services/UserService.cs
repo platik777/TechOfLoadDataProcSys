@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using UserService.Database.Entities;
 using UserService.Models;
 using UserService.Repository;
 using UserService.Services.Utils;
@@ -21,47 +22,25 @@ public class UserService
        _userUpdateValidator = userUpdateValidator;
    }
 
-   public async Task<UserListReply> GetAllUsers()
+   public async Task<List<User>> GetAllUsers()
    {
-       var users = await _userRepository.GetAllAsync();
-       
-       var reply = new UserListReply();
+       var userEntities = await _userRepository.GetAllAsync();
 
-       foreach (var user in users)
-       {
-           reply.Users.Add(new UserReply
-           {
-               Id = user.Id,
-               Login = user.Login,
-               Password = user.Password,
-               Name = user.Name,
-               Surname = user.Surname,
-               Age = user.Age
-           });
-       }
-
-       return reply;
+       return userEntities.Select(userEntity => new User(userEntity)).ToList();
    }
 
-    public async Task<UserReply> GetUserById(GetUserByIdRequest request)
+    public async Task<User> GetUserById(GetUserByIdRequest request)
     {
-        var user = await _userRepository.GetByIdAsync(request.Id);
-        if (user == null)
+        var userEntity = await _userRepository.GetByIdAsync(request.Id);
+        if (userEntity == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {request.Id} not found"));
         }
 
-        return new UserReply
-        {
-            Id = user.Id,
-            Login = user.Login,
-            Name = user.Name,
-            Surname = user.Surname,
-            Age = user.Age
-        };
+        return new User(userEntity);
     }
 
-    public async Task<UserReply> CreateUser(CreateUserRequest request)
+    public async Task<User> CreateUser(CreateUserRequest request)
     {
         var user = new User
         {
@@ -80,16 +59,9 @@ public class UserService
         }
 
         user.Password = PasswordEncoder.HashPassword(request.Password); 
-        var userId = await _userRepository.CreateUserAsync(user);  
-        
-        return new UserReply
-        {
-            Id = userId, 
-            Login = user.Login,
-            Name = user.Name,
-            Surname = user.Surname,
-            Age = user.Age
-        };
+        user.Id = await _userRepository.CreateUserAsync(user);
+
+        return user;
     }
     
     /*{
@@ -100,14 +72,16 @@ public class UserService
         "age": 20
     }*/
     
-    public async Task<UserReply> UpdateUser(UpdateUserRequest request)
+    public async Task<User> UpdateUser(UpdateUserRequest request)
     {
-        var existingUser = _userRepository.GetByIdAsync(request.Id).Result;
+        var existingUserEntity = _userRepository.GetByIdAsync(request.Id).Result;
         
-        existingUser.Name = request.Name == "" ? existingUser.Name : request.Name;
-        existingUser.Surname = request.Surname == "" ? existingUser.Surname : request.Surname;
-        existingUser.Password = request.Password == "" ? existingUser.Password : request.Password;
-        existingUser.Age = request.Age == 0 ? existingUser.Age : request.Age;
+        existingUserEntity.Name = request.Name == "" ? existingUserEntity.Name : request.Name;
+        existingUserEntity.Surname = request.Surname == "" ? existingUserEntity.Surname : request.Surname;
+        existingUserEntity.Password = request.Password == "" ? existingUserEntity.Password : request.Password;
+        existingUserEntity.Age = request.Age == 0 ? existingUserEntity.Age : request.Age;
+
+        var existingUser = new User(existingUserEntity);
 
         var validationResult = _userUpdateValidator.Validate(existingUser);
         if (!validationResult.IsValid)
@@ -116,77 +90,54 @@ public class UserService
             throw new RpcException(new Status(StatusCode.InvalidArgument, errors));
         }
 
-        existingUser.Password = PasswordEncoder.HashPassword(request.Password);
+        existingUserEntity.Password = PasswordEncoder.HashPassword(request.Password);
         await _userRepository.UpdateAsync(existingUser);
 
-        return new UserReply
-        {
-            Id = existingUser.Id,
-            Login = existingUser.Login,
-            Password = existingUser.Password,
-            Name = existingUser.Name,
-            Surname = existingUser.Surname,
-            Age = existingUser.Age
-        };
+        return existingUser;
     }
     
-    public async Task<UserReply> DeleteUser(DeleteUserRequest request)
+    public async Task<User> DeleteUser(DeleteUserRequest request)
     {
-        var user = await _userRepository.GetByIdAsync(request.Id);
-        if (user == null)
+        var userEntity = await _userRepository.GetByIdAsync(request.Id);
+        if (userEntity == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {request.Id} not found"));
         }
 
+        var user = new User(userEntity);
+
         await _userRepository.DeleteAsync(request.Id);
 
-        return new UserReply
-        {
-            Id = user.Id,
-            Login = user.Login,
-            Name = user.Name,
-            Surname = user.Surname,
-            Age = user.Age
-        };
+        return user;
     }
     
-    public async Task<UserListReply> GetUserByName(GetUserByNameRequest request)
+    public async Task<List<User>> GetUserByName(GetUserByNameRequest request)
     {
         var users = await _userRepository.GetByNameAsync(request.Name);
-    
-        var userListReply = new UserListReply();
-        foreach (var user in users)
-        {
-            userListReply.Users.Add(new UserReply
+
+        return users.Select(user => new User
             {
                 Id = user.Id,
                 Login = user.Login,
                 Name = user.Name,
                 Surname = user.Surname,
                 Age = user.Age
-            });
-        }
-
-        return userListReply;
+            })
+            .ToList();
     }
     
-    public async Task<UserListReply> GetUserBySurname(GetUserBySurnameRequest request)
+    public async Task<List<User>> GetUserBySurname(GetUserBySurnameRequest request)
     {
         var users = await _userRepository.GetBySurnameAsync(request.Surname);
-    
-        var userListReply = new UserListReply();
-        foreach (var user in users)
-        {
-            userListReply.Users.Add(new UserReply
+
+        return users.Select(user => new User
             {
                 Id = user.Id,
                 Login = user.Login,
                 Name = user.Name,
                 Surname = user.Surname,
                 Age = user.Age
-            });
-        }
-
-        return userListReply;
+            })
+            .ToList();
     }
 }
