@@ -1,37 +1,38 @@
-﻿using Grpc.Core;
-using UserService.Database.Entities;
+﻿using FluentValidation;
+using Grpc.Core;
 using UserService.Models;
 using UserService.Repository;
 using UserService.Services.Utils;
 using UserService.Services.Validators;
 
 namespace UserService.Services;
-public class UserService
+
+public class UserService : IUserService
 {
-   private readonly IUserRepository _userRepository;
-   private readonly UserCreateValidator _userCreateValidator;
-   private readonly UserUpdateValidator _userUpdateValidator;
-   
-   public UserService(
-       IUserRepository userRepository,
-       UserCreateValidator userCreateValidator,
-       UserUpdateValidator userUpdateValidator)
-   {
-       _userRepository = userRepository;
-       _userCreateValidator = userCreateValidator;
-       _userUpdateValidator = userUpdateValidator;
-   }
+    private readonly IUserRepository _userRepository;
+    private readonly IValidator<User> _userCreateValidator;
+    private readonly IValidator<User> _userUpdateValidator;
 
-   public async Task<List<User>> GetAllUsers()
-   {
-       var userEntities = await _userRepository.GetAllAsync();
-
-       return userEntities.Select(userEntity => new User(userEntity)).ToList();
-   }
-
-    public async Task<User> GetUserById(GetUserByIdRequest request)
+    public UserService(
+        IUserRepository userRepository,
+        IValidator<User> userCreateValidator,
+        IValidator<User> userUpdateValidator)
     {
-        var userEntity = await _userRepository.GetByIdAsync(request.Id);
+        _userRepository = userRepository;
+        _userCreateValidator = userCreateValidator;
+        _userUpdateValidator = userUpdateValidator;
+    }
+
+    public async Task<List<User>> GetAllUsers(CancellationToken cancellationToken)
+    {
+        var userEntities = await _userRepository.GetAllAsync(cancellationToken);
+
+        return userEntities.Select(userEntity => new User(userEntity)).ToList();
+    }
+
+    public async Task<User> GetUserById(GetUserByIdRequest request, CancellationToken cancellationToken)
+    {
+        var userEntity = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
         if (userEntity == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {request.Id} not found"));
@@ -40,7 +41,37 @@ public class UserService
         return new User(userEntity);
     }
 
-    public async Task<User> CreateUser(CreateUserRequest request)
+    public async Task<List<User>> GetUserByName(GetUserByNameRequest request, CancellationToken cancellationToken)
+    {
+        var users = await _userRepository.GetByNameAsync(request.Name, cancellationToken);
+
+        return users.Select(user => new User
+            {
+                Id = user.Id,
+                Login = user.Login,
+                Name = user.Name,
+                Surname = user.Surname,
+                Age = user.Age
+            })
+            .ToList();
+    }
+
+    public async Task<List<User>> GetUserBySurname(GetUserBySurnameRequest request, CancellationToken cancellationToken)
+    {
+        var users = await _userRepository.GetBySurnameAsync(request.Surname, cancellationToken);
+
+        return users.Select(user => new User
+            {
+                Id = user.Id,
+                Login = user.Login,
+                Name = user.Name,
+                Surname = user.Surname,
+                Age = user.Age
+            })
+            .ToList();
+    }
+
+    public async Task<User> CreateUser(CreateUserRequest request, CancellationToken cancellationToken)
     {
         var user = new User
         {
@@ -58,12 +89,12 @@ public class UserService
             throw new RpcException(new Status(StatusCode.InvalidArgument, errors));
         }
 
-        user.Password = PasswordEncoder.HashPassword(request.Password); 
-        user.Id = await _userRepository.CreateUserAsync(user);
+        user.Password = PasswordEncoder.HashPassword(request.Password);
+        user.Id = await _userRepository.CreateUserAsync(user, cancellationToken);
 
         return user;
     }
-    
+
     /*{
         "login": "login",
         "password": "pass",
@@ -71,11 +102,11 @@ public class UserService
         "surname": "borisov",
         "age": 20
     }*/
-    
-    public async Task<User> UpdateUser(UpdateUserRequest request)
+
+    public async Task<User> UpdateUser(UpdateUserRequest request, CancellationToken cancellationToken)
     {
-        var existingUserEntity = _userRepository.GetByIdAsync(request.Id).Result;
-        
+        var existingUserEntity = _userRepository.GetByIdAsync(request.Id, cancellationToken).Result;
+
         existingUserEntity.Name = request.Name == "" ? existingUserEntity.Name : request.Name;
         existingUserEntity.Surname = request.Surname == "" ? existingUserEntity.Surname : request.Surname;
         existingUserEntity.Password = request.Password == "" ? existingUserEntity.Password : request.Password;
@@ -90,15 +121,15 @@ public class UserService
             throw new RpcException(new Status(StatusCode.InvalidArgument, errors));
         }
 
-        existingUserEntity.Password = PasswordEncoder.HashPassword(request.Password);
-        await _userRepository.UpdateAsync(existingUser);
+        existingUserEntity.Password = PasswordEncoder.HashPassword(existingUserEntity.Password ?? throw new InvalidOperationException("Password can't be null"));
+        await _userRepository.UpdateAsync(existingUser, cancellationToken);
 
         return existingUser;
     }
-    
-    public async Task<User> DeleteUser(DeleteUserRequest request)
+
+    public async Task<User> DeleteUser(DeleteUserRequest request, CancellationToken cancellationToken)
     {
-        var userEntity = await _userRepository.GetByIdAsync(request.Id);
+        var userEntity = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
         if (userEntity == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {request.Id} not found"));
@@ -106,38 +137,8 @@ public class UserService
 
         var user = new User(userEntity);
 
-        await _userRepository.DeleteAsync(request.Id);
+        await _userRepository.DeleteAsync(request.Id, cancellationToken);
 
         return user;
-    }
-    
-    public async Task<List<User>> GetUserByName(GetUserByNameRequest request)
-    {
-        var users = await _userRepository.GetByNameAsync(request.Name);
-
-        return users.Select(user => new User
-            {
-                Id = user.Id,
-                Login = user.Login,
-                Name = user.Name,
-                Surname = user.Surname,
-                Age = user.Age
-            })
-            .ToList();
-    }
-    
-    public async Task<List<User>> GetUserBySurname(GetUserBySurnameRequest request)
-    {
-        var users = await _userRepository.GetBySurnameAsync(request.Surname);
-
-        return users.Select(user => new User
-            {
-                Id = user.Id,
-                Login = user.Login,
-                Name = user.Name,
-                Surname = user.Surname,
-                Age = user.Age
-            })
-            .ToList();
     }
 }

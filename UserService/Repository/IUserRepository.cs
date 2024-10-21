@@ -1,15 +1,16 @@
-﻿using UserService.Database.Entities;
+﻿using Grpc.Core;
+using UserService.Database.Entities;
 using UserService.Models;
 
 namespace UserService.Repository;
 
 public interface IUserRepository
 {
-    public Task<UserEntity> GetByIdAsync(int id);
-    public Task<IEnumerable<UserEntity>> GetAllAsync();
-    public Task<int> CreateUserAsync(User user);
-    public Task UpdateAsync(User user);
-    public Task DeleteAsync(int id);
-    public Task<List<UserEntity>> GetByNameAsync(string name);
-    public Task<List<UserEntity>> GetBySurnameAsync(string surname);
+    public Task<List<UserEntity>> GetAllAsync(CancellationToken cancellationToken);
+    public Task<UserEntity> GetByIdAsync(int id, CancellationToken cancellationToken);
+    public Task<List<UserEntity>> GetByNameAsync(string name, CancellationToken cancellationToken);
+    public Task<List<UserEntity>> GetBySurnameAsync(string surname, CancellationToken cancellationToken);
+    public Task<int> CreateUserAsync(User user, CancellationToken cancellationToken);
+    public Task UpdateAsync(User user, CancellationToken cancellationToken);
+    public Task DeleteAsync(int id, CancellationToken cancellationToken);
 }

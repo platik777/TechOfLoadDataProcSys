@@ -13,95 +13,109 @@ public class UserRepository : IUserRepository
     {
         _dbService = dbService;
     }
-
-    public async Task<UserEntity> GetByIdAsync(int id)
+    
+    public async Task<List<UserEntity>> GetAllAsync(CancellationToken cancellationToken)
     {
+        var query = "SELECT * FROM getAllUsers()";
+        
         using (var connection = _dbService.GetConnection())
         {
-            var parameters = new DynamicParameters();
-            parameters.Add("Id", id);
-            
-            var query = "SELECT * FROM GetUserById(@Id)";
-            return await connection.QueryFirstOrDefaultAsync<UserEntity>(query, parameters);
-        }
-    }
-
-    public async Task<IEnumerable<UserEntity>> GetAllAsync()
-    {
-        using (var connection = _dbService.GetConnection())
-        {
-            var query = "SELECT * FROM getAllUsers()";
-            return await connection.QueryAsync<UserEntity>(query);
-        }
-    }
-
-    public async Task<int> CreateUserAsync(User user)
-    {
-        using (var connection = _dbService.GetConnection())
-        {
-            var parameters = new DynamicParameters();
-            parameters.Add("Login", user.Login);
-            parameters.Add("Password", user.Password);
-            parameters.Add("Name", user.Name);
-            parameters.Add("Surname", user.Surname);
-            parameters.Add("Age", user.Age);
-
-            var query = "SELECT CreateUser(@Login, @Password, @Name, @Surname, @Age)";
-            return await connection.ExecuteScalarAsync<int>(query, parameters);
-        }
-    }
-
-    public async Task UpdateAsync(User user)
-    {
-        using (var connection = _dbService.GetConnection())
-        {
-            var parameters = new DynamicParameters();
-            parameters.Add("Id", user.Id);
-            parameters.Add("Password", user.Password);
-            parameters.Add("Name", user.Name);
-            parameters.Add("Surname", user.Surname);
-            parameters.Add("Age", user.Age);
-
-            var query = "SELECT UpdateUser(@Id, @Password, @Name, @Surname, @Age)";
-            await connection.ExecuteAsync(query, parameters);
-        }
-    }
-
-    public async Task DeleteAsync(int id)
-    {
-        using (var connection = _dbService.GetConnection())
-        {
-            var parameters = new DynamicParameters();
-            parameters.Add("Id", id);
-
-            var query = "SELECT DeleteUser(@Id)";
-            await connection.ExecuteAsync(query, parameters);
-        }
-    }
-
-    public async Task<List<UserEntity>> GetByNameAsync(string name)
-    {
-        using (var connection = _dbService.GetConnection())
-        {
-            var parameters = new DynamicParameters();
-            parameters.Add("Name", name);
-
-            var query = "SELECT * FROM GetUserByName(@Name)";
-            var result = await connection.QueryAsync<UserEntity>(query, parameters);
+            var command = new CommandDefinition(query, cancellationToken: cancellationToken);
+            var result = await connection.QueryAsync<UserEntity>(command);
             return result.ToList(); 
         }
     }
 
-    public async Task<List<UserEntity>> GetBySurnameAsync(string surname)
+    public async Task<UserEntity> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
+        var parameters = new DynamicParameters();
+        parameters.Add("Id", id);
+            
+        var query = "SELECT * FROM GetUserById(@Id)";
+        
         using (var connection = _dbService.GetConnection())
         {
-            var parameters = new DynamicParameters();
-            parameters.Add("Surname", surname);
+            var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
+            return await connection.QueryFirstOrDefaultAsync<UserEntity>(command);
+        }
+    }
+    
+    public async Task<List<UserEntity>> GetByNameAsync(string name, CancellationToken cancellationToken)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("Name", name);
 
-            var query = "SELECT * FROM GetUserBySurname(@Surname)";
-            var result = await connection.QueryAsync<UserEntity>(query, parameters);
+        var query = "SELECT * FROM GetUserByName(@Name)";
+        
+        using (var connection = _dbService.GetConnection())
+        {
+            var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
+            var result = await connection.QueryAsync<UserEntity>(command);
+            return result.ToList(); 
+        }
+    }
+
+    public async Task<List<UserEntity>> GetBySurnameAsync(string surname, CancellationToken cancellationToken)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("Surname", surname);
+
+        var query = "SELECT * FROM GetUserBySurname(@Surname)";
+        
+        using (var connection = _dbService.GetConnection())
+        {
+            var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
+            var result = await connection.QueryAsync<UserEntity>(command);
             return result.ToList();
+        }
+    }
+
+    public async Task<int> CreateUserAsync(User user, CancellationToken cancellationToken)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("Login", user.Login);
+        parameters.Add("Password", user.Password);
+        parameters.Add("Name", user.Name);
+        parameters.Add("Surname", user.Surname);
+        parameters.Add("Age", user.Age);
+        
+        var query = "SELECT CreateUser(@Login, @Password, @Name, @Surname, @Age)";
+        using (var connection = _dbService.GetConnection())
+        {
+            var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
+            return await connection.ExecuteScalarAsync<int>(command);
+        }
+    }
+
+    public async Task UpdateAsync(User user, CancellationToken cancellationToken)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("Id", user.Id);
+        parameters.Add("Password", user.Password);
+        parameters.Add("Name", user.Name);
+        parameters.Add("Surname", user.Surname);
+        parameters.Add("Age", user.Age);
+
+        var query = "SELECT UpdateUser(@Id, @Password, @Name, @Surname, @Age)";
+        
+        using (var connection = _dbService.GetConnection())
+        {
+            var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
+
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("Id", id);
+
+        var query = "SELECT DeleteUser(@Id)";
+        
+        using (var connection = _dbService.GetConnection())
+        {
+            var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
         }
     }
 }

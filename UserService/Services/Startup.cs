@@ -1,4 +1,8 @@
-﻿using UserService.Repository;
+﻿using FluentValidation;
+using UserService.Controllers;
+using UserService.Models;
+using UserService.Models.Mapper;
+using UserService.Repository;
 using UserService.Services.Utils;
 using UserService.Services.Validators;
 
@@ -13,9 +17,10 @@ public class Startup
         
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton<DbService>();
-        services.AddSingleton<UserCreateValidator>();
-        services.AddSingleton<UserUpdateValidator>();
-        services.AddScoped<UserService>();
+        services.AddSingleton<IValidator<User>, UserCreateValidator>();
+        services.AddSingleton<IValidator<User>, UserUpdateValidator>();
+        services.AddSingleton<IUserMapper, UserMapper>();
+        services.AddScoped<IUserService, UserService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -29,7 +34,7 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapGrpcService<UserServiceGrps>();
+            endpoints.MapGrpcService<UserServiceController>();
             endpoints.MapGrpcReflectionService();
         });
     }

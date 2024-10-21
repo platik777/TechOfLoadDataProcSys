@@ -20,6 +20,7 @@
         <PackageReference Include="Grpc.Tools" Version="2.52.0" PrivateAssets="All" />
         <PackageReference Include="Google.Protobuf" Version="3.27.0" />
         <PackageReference Include="Npgsql" Version="8.0.4" />
+        <PackageReference Include="Riok.Mapperly" Version="4.1.0-next.1" />
     </ItemGroup>
 
     <ItemGroup>
