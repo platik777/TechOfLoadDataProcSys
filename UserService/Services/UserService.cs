@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Grpc.Core;
+using UserService.Mapper;
 using UserService.Models;
 using UserService.Repository;
 using UserService.Services.Utils;
@@ -12,22 +13,28 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IValidator<User> _userCreateValidator;
     private readonly IValidator<User> _userUpdateValidator;
+    private readonly IUserEntityToUserMapper _userEntityToUserMapper;
+    private readonly ICreateUserRequestToUserMapper _createUserRequestToUserMapper;
 
     public UserService(
         IUserRepository userRepository,
         IValidator<User> userCreateValidator,
-        IValidator<User> userUpdateValidator)
+        IValidator<User> userUpdateValidator,
+        IUserEntityToUserMapper userEntityToUserMapper, 
+        ICreateUserRequestToUserMapper createUserRequestToUserMapper)
     {
         _userRepository = userRepository;
         _userCreateValidator = userCreateValidator;
         _userUpdateValidator = userUpdateValidator;
+        _userEntityToUserMapper = userEntityToUserMapper;
+        _createUserRequestToUserMapper = createUserRequestToUserMapper;
     }
 
     public async Task<List<User>> GetAllUsers(CancellationToken cancellationToken)
     {
         var userEntities = await _userRepository.GetAllAsync(cancellationToken);
 
-        return userEntities.Select(userEntity => new User(userEntity)).ToList();
+        return userEntities.Select(userEntity => _userEntityToUserMapper.MapToUser(userEntity)).ToList();
     }
 
     public async Task<User> GetUserById(GetUserByIdRequest request, CancellationToken cancellationToken)
@@ -38,53 +45,28 @@ public class UserService : IUserService
             throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {request.Id} not found"));
         }
 
-        return new User(userEntity);
+        return _userEntityToUserMapper.MapToUser(userEntity);
     }
 
     public async Task<List<User>> GetUserByName(GetUserByNameRequest request, CancellationToken cancellationToken)
     {
         var users = await _userRepository.GetByNameAsync(request.Name, cancellationToken);
 
-        return users.Select(user => new User
-            {
-                Id = user.Id,
-                Login = user.Login,
-                Password = user.Password,
-                Name = user.Name,
-                Surname = user.Surname,
-                Age = user.Age
-            })
-            .ToList();
+        return users.Select(user => _userEntityToUserMapper.MapToUser(user)).ToList();
     }
 
     public async Task<List<User>> GetUserBySurname(GetUserBySurnameRequest request, CancellationToken cancellationToken)
     {
         var users = await _userRepository.GetBySurnameAsync(request.Surname, cancellationToken);
 
-        return users.Select(user => new User
-            {
-                Id = user.Id,
-                Login = user.Login,
-                Password = user.Password,
-                Name = user.Name,
-                Surname = user.Surname,
-                Age = user.Age
-            })
-            .ToList();
+        return users.Select(user => _userEntityToUserMapper.MapToUser(user)).ToList();
     }
 
     public async Task<User> CreateUser(CreateUserRequest request, CancellationToken cancellationToken)
     {
-        var user = new User
-        {
-            Login = request.Login,
-            Password = request.Password,
-            Name = request.Name,
-            Surname = request.Surname,
-            Age = request.Age
-        };
+        var user = _createUserRequestToUserMapper.CreateUserRequestToUser(request);
 
-        var validationResult = _userCreateValidator.Validate(user);
+        var validationResult = await _userCreateValidator.ValidateAsync(user, cancellationToken);
         if (!validationResult.IsValid)
         {
             var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
@@ -114,9 +96,9 @@ public class UserService : IUserService
         existingUserEntity.Password = request.Password == "" ? existingUserEntity.Password : request.Password;
         existingUserEntity.Age = request.Age == 0 ? existingUserEntity.Age : request.Age;
 
-        var existingUser = new User(existingUserEntity);
+        var existingUser = _userEntityToUserMapper.MapToUser(existingUserEntity);
 
-        var validationResult = _userUpdateValidator.Validate(existingUser);
+        var validationResult = await _userUpdateValidator.ValidateAsync(existingUser, cancellationToken);
         if (!validationResult.IsValid)
         {
             var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
@@ -137,7 +119,7 @@ public class UserService : IUserService
             throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {request.Id} not found"));
         }
 
-        var user = new User(userEntity);
+        var user = _userEntityToUserMapper.MapToUser(userEntity);
 
         await _userRepository.DeleteAsync(request.Id, cancellationToken);
 

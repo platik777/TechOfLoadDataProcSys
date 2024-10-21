@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using UserService.Controllers;
+using UserService.Mapper;
 using UserService.Models;
-using UserService.Models.Mapper;
 using UserService.Repository;
 using UserService.Services.Utils;
 using UserService.Services.Validators;
@@ -19,7 +19,9 @@ public class Startup
         services.AddSingleton<DbService>();
         services.AddSingleton<IValidator<User>, UserCreateValidator>();
         services.AddSingleton<IValidator<User>, UserUpdateValidator>();
-        services.AddSingleton<IUserMapper, UserMapper>();
+        services.AddSingleton<IUserToUserReplyMapper, UserToUserReplyMapper>();
+        services.AddSingleton<IUserEntityToUserMapper, UserEntityToUserMapper>();
+        services.AddSingleton<ICreateUserRequestToUserMapper, CreateUserRequestToUserMapper>();
         services.AddScoped<IUserService, UserService>();
     }
 

@@ -21,14 +21,4 @@ public class User
         Surname = surname;
         Age = age;
     }
-
-    public User(UserEntity userEntity)
-    {
-        Id = userEntity.Id;
-        Login = userEntity.Login;
-        Password = userEntity.Password;
-        Name = userEntity.Name;
-        Surname = userEntity.Surname;
-        Age = userEntity.Age;
-    }
 }
