@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Grpc.Core;
+using Npgsql;
 using UserService.Database.Entities;
 using UserService.Models;
 using UserService.Services;
@@ -78,14 +80,22 @@ public class UserRepository : IUserRepository
         parameters.Add("Name", user.Name);
         parameters.Add("Surname", user.Surname);
         parameters.Add("Age", user.Age);
-        
+
         var query = "SELECT CreateUser(@Login, @Password, @Name, @Surname, @Age)";
         using (var connection = _dbService.GetConnection())
         {
-            var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
-            return await connection.ExecuteScalarAsync<int>(command);
+            try
+            {
+                var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
+                return await connection.ExecuteScalarAsync<int>(command);
+            }
+            catch (PostgresException ex) when (ex.SqlState == "23505")
+            {
+                throw new RpcException(new Status(StatusCode.AlreadyExists, $"User with login {user.Login} already exists"));
+            }
         }
     }
+
 
     public async Task UpdateAsync(User user, CancellationToken cancellationToken)
     {

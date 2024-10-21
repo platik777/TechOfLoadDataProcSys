@@ -49,6 +49,7 @@ public class UserService : IUserService
             {
                 Id = user.Id,
                 Login = user.Login,
+                Password = user.Password,
                 Name = user.Name,
                 Surname = user.Surname,
                 Age = user.Age
@@ -64,6 +65,7 @@ public class UserService : IUserService
             {
                 Id = user.Id,
                 Login = user.Login,
+                Password = user.Password,
                 Name = user.Name,
                 Surname = user.Surname,
                 Age = user.Age
@@ -121,7 +123,7 @@ public class UserService : IUserService
             throw new RpcException(new Status(StatusCode.InvalidArgument, errors));
         }
 
-        existingUserEntity.Password = PasswordEncoder.HashPassword(existingUserEntity.Password ?? throw new InvalidOperationException("Password can't be null"));
+        existingUser.Password = PasswordEncoder.HashPassword(request.Password);
         await _userRepository.UpdateAsync(existingUser, cancellationToken);
 
         return existingUser;
