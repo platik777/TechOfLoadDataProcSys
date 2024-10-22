@@ -4,7 +4,6 @@ using UserService.Mapper;
 using UserService.Models;
 using UserService.Repository;
 using UserService.Services.Utils;
-using UserService.Services.Validators;
 
 namespace UserService.Services;
 
