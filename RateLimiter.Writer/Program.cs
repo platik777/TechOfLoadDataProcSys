@@ -1,8 +1,19 @@
-var builder = WebApplication.CreateBuilder(args);
+using RateLimiter.Writer.Services;
 
-// Add services to the container.
-builder.Services.AddGrpc();
-
-var app = builder.Build();
-
-await app.RunAsync("http://*:5001");
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CreateHostBuilder(args).Build().Run();
+    }
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>()
+                    .ConfigureKestrel(options =>
+                    {
+                        options.ListenAnyIP(5001);
+                    });
+            });
+}

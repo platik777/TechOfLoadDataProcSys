@@ -5,5 +5,31 @@ option csharp_namespace = "RateLimiter.Writer";
 package writer;
 
 service Writer {
-  
+  rpc CreateRateLimit(CreateRateLimitRequest) returns (RateLimitReply);
+  rpc GetRateLimit(GetRateLimitByRouteRequest) returns (RateLimitReply);
+  rpc UpdateRateLimit(UpdateRateLimitRequest) returns (RateLimitReply);
+  rpc DeleteRateLimitByRoute(DeleteRateLimitByRouteRequest) returns (RateLimitReply);
+}
+
+message CreateRateLimitRequest {
+  string route = 1;
+  int32 requests_per_minute = 2;
+}
+
+message GetRateLimitByRouteRequest{
+  string route = 1;
+}
+
+message UpdateRateLimitRequest{
+  string route = 1;
+  int32 requests_per_minute = 2;
+}
+
+message DeleteRateLimitByRouteRequest{
+  string route = 1;
+}
+
+message RateLimitReply {
+  string route = 1;
+  int32 requests_per_minute = 2;
 }
