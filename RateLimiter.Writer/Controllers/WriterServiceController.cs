@@ -33,9 +33,10 @@ public class WriterServiceController : WriterService.WriterServiceBase
         return _rateLimitMapper.MapToRateLimitReply(rateLimit);
     }
 
-    public override async Task<DeleteRateLimitReply> DeleteRateLimitByRoute(DeleteRateLimitByRouteRequest request, ServerCallContext context)
+    public override async Task<RateLimitReply> DeleteRateLimitByRoute(DeleteRateLimitByRouteRequest request, ServerCallContext context)
     {
-        await _writerService.DeleteRateLimit(request, context.CancellationToken);
-        return new DeleteRateLimitReply();
+        var deletedRateLimit = await _writerService.DeleteRateLimit(request, context.CancellationToken);
+
+        return _rateLimitMapper.MapToRateLimitReply(deletedRateLimit);
     }
 }

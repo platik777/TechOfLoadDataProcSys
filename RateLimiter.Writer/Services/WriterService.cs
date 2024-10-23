@@ -17,7 +17,7 @@ public class WriterService : IWriterService
 
     public async Task<RateLimit> CreateRateLimit(CreateRateLimitRequest request, CancellationToken cancellationToken)
     {
-        var existingRateLimit = await _writerRepository.GetByRouteAsync(request.Route);
+        var existingRateLimit = await _writerRepository.GetByRouteAsync(request.Route, cancellationToken);
         if (existingRateLimit != null)
         {
             throw new RpcException(new Status(StatusCode.AlreadyExists, "Rate limit already exists."));
@@ -25,14 +25,14 @@ public class WriterService : IWriterService
 
         var rateLimit = new RateLimit(request.Route, request.RequestsPerMinute);
 
-        await _writerRepository.CreateAsync(rateLimit);
+        await _writerRepository.CreateAsync(rateLimit, cancellationToken);
 
         return rateLimit;
     }
 
     public async Task<RateLimit> GetRateLimit(GetRateLimitByRouteRequest request, CancellationToken cancellationToken)
     {
-        var rateLimit = await _writerRepository.GetByRouteAsync(request.Route);
+        var rateLimit = await _writerRepository.GetByRouteAsync(request.Route, cancellationToken);
         if (rateLimit == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, "Rate limit not found."));
@@ -43,21 +43,28 @@ public class WriterService : IWriterService
 
     public async Task<RateLimit> UpdateRateLimit(UpdateRateLimitRequest request, CancellationToken cancellationToken)
     {
-        var existingRateLimit = await _writerRepository.GetByRouteAsync(request.Route);
+        var existingRateLimit = await _writerRepository.GetByRouteAsync(request.Route, cancellationToken);
         if (existingRateLimit == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, "Rate limit not found."));
         }
 
         existingRateLimit.RequestsPerMinute = request.RequestsPerMinute;
-        var rateLimit = new RateLimit(existingRateLimit.Route, existingRateLimit.RequestsPerMinute);
-        await _writerRepository.UpdateAsync(rateLimit);
+        var rateLimit = _rateLimitMapper.MapToRateLimit(existingRateLimit);
+        await _writerRepository.UpdateAsync(rateLimit, cancellationToken);
 
         return rateLimit;
     }
 
-    public async Task DeleteRateLimit(DeleteRateLimitByRouteRequest request, CancellationToken cancellationToken)
+    public async Task<RateLimit> DeleteRateLimit(DeleteRateLimitByRouteRequest request, CancellationToken cancellationToken)
     {
-        await _writerRepository.DeleteAsync(request.Route);
+        var deletedEntity = await _writerRepository.DeleteAsync(request.Route, cancellationToken);
+    
+        if (deletedEntity == null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, $"Rate limit for route {request.Route} not found."));
+        }
+
+        return _rateLimitMapper.MapToRateLimit(deletedEntity);
     }
 }
