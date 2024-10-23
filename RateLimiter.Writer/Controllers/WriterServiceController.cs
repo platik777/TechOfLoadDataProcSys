@@ -4,7 +4,7 @@ using RateLimiter.Writer.Services;
 
 namespace RateLimiter.Writer.Controllers;
 
-public class WriterServiceController : Writer.WriterBase
+public class WriterServiceController : WriterService.WriterServiceBase
 {
     private readonly IWriterService _writerService;
     private readonly IRateLimitToRateLimitReplyMapper _rateLimitMapper;
@@ -33,9 +33,9 @@ public class WriterServiceController : Writer.WriterBase
         return _rateLimitMapper.MapToRateLimitReply(rateLimit);
     }
 
-    public override async Task<RateLimitReply> DeleteRateLimitByRoute(DeleteRateLimitByRouteRequest request, ServerCallContext context)
+    /*public override async Task DeleteRateLimitByRoute(DeleteRateLimitByRouteRequest request, ServerCallContext context)
     {
         var rateLimit = await _writerService.DeleteRateLimit(request, context.CancellationToken);
         return _rateLimitMapper.MapToRateLimitReply(rateLimit);
-    }
+    }*/
 }

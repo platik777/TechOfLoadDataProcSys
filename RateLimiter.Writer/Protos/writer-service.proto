@@ -2,9 +2,9 @@ syntax = "proto3";
 
 option csharp_namespace = "RateLimiter.Writer";
 
-package writer;
+package rateLimiter.Writer;
 
-service Writer {
+service WriterService {
   rpc CreateRateLimit(CreateRateLimitRequest) returns (RateLimitReply);
   rpc GetRateLimit(GetRateLimitByRouteRequest) returns (RateLimitReply);
   rpc UpdateRateLimit(UpdateRateLimitRequest) returns (RateLimitReply);
