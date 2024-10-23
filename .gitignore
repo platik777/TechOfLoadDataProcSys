@@ -10,6 +10,8 @@
 *.userosscache
 *.sln.docstates
 /**/**/.idea/*
+RateLimiter.Writer/Services/Protos/
+UserService/Services/Protos/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

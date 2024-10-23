@@ -8,7 +8,7 @@ service WriterService {
   rpc CreateRateLimit(CreateRateLimitRequest) returns (RateLimitReply);
   rpc GetRateLimit(GetRateLimitByRouteRequest) returns (RateLimitReply);
   rpc UpdateRateLimit(UpdateRateLimitRequest) returns (RateLimitReply);
-  rpc DeleteRateLimitByRoute(DeleteRateLimitByRouteRequest) returns (RateLimitReply);
+  rpc DeleteRateLimitByRoute(DeleteRateLimitByRouteRequest) returns (DeleteRateLimitReply);
 }
 
 message CreateRateLimitRequest {
@@ -32,4 +32,8 @@ message DeleteRateLimitByRouteRequest{
 message RateLimitReply {
   string route = 1;
   int32 requests_per_minute = 2;
+}
+
+message DeleteRateLimitReply {
+  
 }

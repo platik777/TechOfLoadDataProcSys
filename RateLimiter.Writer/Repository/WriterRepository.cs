@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Driver;
 using RateLimiter.Writer.Models;
 using RateLimiter.Writer.Models.Entities;
@@ -45,7 +46,9 @@ public class WriterRepository : IWriterRepository
         var entity = new RateLimitEntity(rateLimit.Route, rateLimit.RequestsPerMinute);
         try
         {
-            var result = await _rateLimits.ReplaceOneAsync(rl => rl.Route == rateLimit.Route, entity);
+            var filter = new BsonDocument("Route", entity.Route);
+            var updateSettings = new BsonDocument("$set", new BsonDocument("RequestsPerMinute", entity.RequestsPerMinute));
+            var result = await _rateLimits.UpdateOneAsync(filter, updateSettings);
             if (result.IsAcknowledged && result.ModifiedCount > 0)
             {
                 return entity;

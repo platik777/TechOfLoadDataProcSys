@@ -7,10 +7,12 @@ namespace RateLimiter.Writer.Services;
 public class WriterService : IWriterService
 {
     private readonly IWriterRepository _writerRepository;
+    private readonly IRateLimitEntityToRateLimitMapper _rateLimitMapper;
 
-    public WriterService(IWriterRepository rateLimitRepository)
+    public WriterService(IWriterRepository rateLimitRepository, IRateLimitEntityToRateLimitMapper rateLimitMapper)
     {
         _writerRepository = rateLimitRepository;
+        _rateLimitMapper = rateLimitMapper;
     }
 
     public async Task<RateLimit> CreateRateLimit(CreateRateLimitRequest request, CancellationToken cancellationToken)
@@ -36,7 +38,7 @@ public class WriterService : IWriterService
             throw new RpcException(new Status(StatusCode.NotFound, "Rate limit not found."));
         }
 
-        return new RateLimit(rateLimit.Route, rateLimit.RequestsPerMinute);
+        return _rateLimitMapper.MapToRateLimit(rateLimit);
     }
 
     public async Task<RateLimit> UpdateRateLimit(UpdateRateLimitRequest request, CancellationToken cancellationToken)

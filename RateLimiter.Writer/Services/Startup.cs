@@ -14,6 +14,7 @@ public class Startup
         
         services.AddSingleton<IWriterRepository, WriterRepository>();
         services.AddSingleton<IRateLimitToRateLimitReplyMapper, RateLimitToRateLimitReplyMapper>();
+        services.AddSingleton<IRateLimitEntityToRateLimitMapper, RateLimitEntityToRateLimitMapper>();
         services.AddSingleton<DbService>();
         services.AddScoped<IWriterService, WriterService>();
     }
