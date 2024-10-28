@@ -14,6 +14,7 @@
 # Protos
 RateLimiter.Writer/Services/Protos/
 UserService/Services/Protos/
+RateLimiter.Reader/Services/Protos/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
