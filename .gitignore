@@ -11,6 +11,10 @@
 *.sln.docstates
 /**/**/.idea/*
 
+# Protos
+RateLimiter.Writer/Services/Protos/
+UserService/Services/Protos/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
