@@ -5,8 +5,8 @@ namespace RateLimiter.Writer.Repository;
 
 public interface IWriterRepository
 {
-    Task<RateLimitEntity> GetByRouteAsync(string id, CancellationToken cancellationToken);
-    Task<RateLimitEntity> CreateAsync(RateLimit rateLimit, CancellationToken cancellationToken);
-    Task<RateLimitEntity?> UpdateAsync(RateLimit rateLimit, CancellationToken cancellationToken);
-    Task<RateLimitEntity> DeleteAsync(string id, CancellationToken cancellationToken);
+    Task<RateLimit> GetByRouteAsync(string id, CancellationToken cancellationToken);
+    Task<RateLimit> CreateAsync(RateLimit rateLimit, CancellationToken cancellationToken);
+    Task<RateLimit?> UpdateAsync(RateLimit rateLimit, CancellationToken cancellationToken);
+    Task<RateLimit?> DeleteAsync(string id, CancellationToken cancellationToken);
 }

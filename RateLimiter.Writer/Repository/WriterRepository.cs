@@ -10,19 +10,21 @@ public class WriterRepository : IWriterRepository
 {
     private readonly IMongoCollection<RateLimitEntity> _rateLimits;
     private readonly IRateLimitToRateLimitEntityMapper _rateLimitEntityMapper;
+    private readonly IRateLimitEntityToRateLimitMapper _rateLimitMapper;
 
-    public WriterRepository(DbService mongoDbService, IRateLimitToRateLimitEntityMapper rateLimitEntityMapper)
+    public WriterRepository(DbService mongoDbService, IRateLimitToRateLimitEntityMapper rateLimitEntityMapper, IRateLimitEntityToRateLimitMapper rateLimitMapper)
     {
         _rateLimitEntityMapper = rateLimitEntityMapper;
         _rateLimits = mongoDbService.GetCollection<RateLimitEntity>("rate_limits");
+        _rateLimitMapper = rateLimitMapper;
     }
 
-    public async Task<RateLimitEntity> GetByRouteAsync(string route, CancellationToken cancellationToken)
+    public async Task<RateLimit> GetByRouteAsync(string route, CancellationToken cancellationToken)
     {
         try
         {
-            return await _rateLimits.Find(rl => rl.Route == route)
-                                    .FirstOrDefaultAsync(cancellationToken);
+            return _rateLimitMapper.MapToRateLimit(await _rateLimits.Find(rl => rl.Route == route)
+                                    .FirstOrDefaultAsync(cancellationToken));
         }
         catch (Exception ex)
         {
@@ -30,13 +32,13 @@ public class WriterRepository : IWriterRepository
         }
     }
 
-    public async Task<RateLimitEntity> CreateAsync(RateLimit rateLimit, CancellationToken cancellationToken)
+    public async Task<RateLimit> CreateAsync(RateLimit rateLimit, CancellationToken cancellationToken)
     {
         var entity = _rateLimitEntityMapper.MapToRateLimitEntity(rateLimit);
         try
         {
             await _rateLimits.InsertOneAsync(entity, cancellationToken: cancellationToken);
-            return entity;
+            return _rateLimitMapper.MapToRateLimit(entity);
         }
         catch (Exception ex)
         {
@@ -44,19 +46,19 @@ public class WriterRepository : IWriterRepository
         }
     }
 
-    public async Task<RateLimitEntity?> UpdateAsync(RateLimit rateLimit, CancellationToken cancellationToken)
+    public async Task<RateLimit?> UpdateAsync(RateLimit rateLimit, CancellationToken cancellationToken)
     {
         var entity = _rateLimitEntityMapper.MapToRateLimitEntity(rateLimit);
         try
         {
-            var filter = new BsonDocument("Route", entity.Route);
-            var updateSettings = new BsonDocument("$set", new BsonDocument("RequestsPerMinute", entity.RequestsPerMinute));
+            var filter = Builders<RateLimitEntity>.Filter.Eq(rl => rl.Route, entity.Route);
+            var update = Builders<RateLimitEntity>.Update.Set(rl => rl.RequestsPerMinute, entity.RequestsPerMinute);
 
-            var result = await _rateLimits.UpdateOneAsync(filter, updateSettings, cancellationToken: cancellationToken);
+            var result = await _rateLimits.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
             
             if (result.IsAcknowledged && result.ModifiedCount > 0)
             {
-                return entity;
+                return _rateLimitMapper.MapToRateLimit(entity);
             }
             return null; 
         }
@@ -66,7 +68,7 @@ public class WriterRepository : IWriterRepository
         }
     }
 
-    public async Task<RateLimitEntity> DeleteAsync(string route, CancellationToken cancellationToken)
+    public async Task<RateLimit?> DeleteAsync(string route, CancellationToken cancellationToken)
     {
         try
         {
@@ -77,7 +79,7 @@ public class WriterRepository : IWriterRepository
 
             if (result.DeletedCount > 0)
             {
-                return entity;
+                return _rateLimitMapper.MapToRateLimit(entity);
             }
 
             return null;
