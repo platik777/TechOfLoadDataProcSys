@@ -1,7 +1,9 @@
-﻿using Dapper;
+﻿using System.Collections;
+using Dapper;
 using Grpc.Core;
 using Npgsql;
 using UserService.Database.Entities;
+using UserService.Mapper;
 using UserService.Models;
 using UserService.Services;
 
@@ -10,13 +12,16 @@ namespace UserService.Repository;
 public class UserRepository : IUserRepository
 {
     private readonly DbService _dbService;
+    private readonly IUserEntityToUserMapper _userEntityToUserMapper;
+    
 
-    public UserRepository(DbService dbService)
+    public UserRepository(DbService dbService, IUserEntityToUserMapper userEntityToUserMapper)
     {
         _dbService = dbService;
+        _userEntityToUserMapper = userEntityToUserMapper;
     }
     
-    public async Task<List<UserEntity>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<User>> GetAllAsync(CancellationToken cancellationToken)
     {
         var query = "SELECT * FROM getAllUsers()";
         
@@ -24,11 +29,12 @@ public class UserRepository : IUserRepository
         {
             var command = new CommandDefinition(query, cancellationToken: cancellationToken);
             var result = await connection.QueryAsync<UserEntity>(command);
-            return result.ToList(); 
+            var userEntityList = result.ToList();
+            return userEntityList.Select(t => _userEntityToUserMapper.MapToUser(t)).ToList();
         }
     }
 
-    public async Task<UserEntity> GetByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<User?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
         var parameters = new DynamicParameters();
         parameters.Add("Id", id);
@@ -38,11 +44,17 @@ public class UserRepository : IUserRepository
         using (var connection = _dbService.GetConnection())
         {
             var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
-            return await connection.QueryFirstOrDefaultAsync<UserEntity>(command);
+            var result =  await connection.QueryFirstOrDefaultAsync<UserEntity>(command);
+            if (result != null)
+            {
+                return _userEntityToUserMapper.MapToUser(result);
+            }
+
+            return null;
         }
     }
     
-    public async Task<List<UserEntity>> GetByNameAsync(string name, CancellationToken cancellationToken)
+    public async Task<List<User>> GetByNameAsync(string name, CancellationToken cancellationToken)
     {
         var parameters = new DynamicParameters();
         parameters.Add("Name", name);
@@ -53,11 +65,12 @@ public class UserRepository : IUserRepository
         {
             var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
             var result = await connection.QueryAsync<UserEntity>(command);
-            return result.ToList(); 
+            var userEntityList = result.ToList();
+            return userEntityList.Select(t => _userEntityToUserMapper.MapToUser(t)).ToList();
         }
     }
 
-    public async Task<List<UserEntity>> GetBySurnameAsync(string surname, CancellationToken cancellationToken)
+    public async Task<List<User>> GetBySurnameAsync(string surname, CancellationToken cancellationToken)
     {
         var parameters = new DynamicParameters();
         parameters.Add("Surname", surname);
@@ -68,7 +81,8 @@ public class UserRepository : IUserRepository
         {
             var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
             var result = await connection.QueryAsync<UserEntity>(command);
-            return result.ToList();
+            var userEntityList = result.ToList();
+            return userEntityList.Select(t => _userEntityToUserMapper.MapToUser(t)).ToList();
         }
     }
 
