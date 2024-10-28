@@ -7,12 +7,10 @@ namespace RateLimiter.Writer.Services;
 public class WriterService : IWriterService
 {
     private readonly IWriterRepository _writerRepository;
-    private readonly IRateLimitEntityToRateLimitMapper _rateLimitMapper;
 
-    public WriterService(IWriterRepository rateLimitRepository, IRateLimitEntityToRateLimitMapper rateLimitMapper)
+    public WriterService(IWriterRepository rateLimitRepository)
     {
         _writerRepository = rateLimitRepository;
-        _rateLimitMapper = rateLimitMapper;
     }
 
     public async Task<RateLimit> CreateRateLimit(CreateRateLimitRequest request, CancellationToken cancellationToken)
@@ -38,7 +36,7 @@ public class WriterService : IWriterService
             throw new RpcException(new Status(StatusCode.NotFound, "Rate limit not found."));
         }
 
-        return _rateLimitMapper.MapToRateLimit(rateLimit);
+        return rateLimit;
     }
 
     public async Task<RateLimit> UpdateRateLimit(UpdateRateLimitRequest request, CancellationToken cancellationToken)
@@ -49,11 +47,10 @@ public class WriterService : IWriterService
             throw new RpcException(new Status(StatusCode.NotFound, "Rate limit not found."));
         }
 
-        existingRateLimit.RequestsPerMinute = request.RequestsPerMinute;
-        var rateLimit = _rateLimitMapper.MapToRateLimit(existingRateLimit);
-        await _writerRepository.UpdateAsync(rateLimit, cancellationToken);
+        existingRateLimit = existingRateLimit with { RequestsPerMinute = request.RequestsPerMinute };
+        await _writerRepository.UpdateAsync(existingRateLimit, cancellationToken);
 
-        return rateLimit;
+        return existingRateLimit;
     }
 
     public async Task<RateLimit> DeleteRateLimit(DeleteRateLimitByRouteRequest request, CancellationToken cancellationToken)
@@ -65,6 +62,6 @@ public class WriterService : IWriterService
             throw new RpcException(new Status(StatusCode.NotFound, $"Rate limit for route {request.Route} not found."));
         }
 
-        return _rateLimitMapper.MapToRateLimit(deletedEntity);
+        return deletedEntity;
     }
 }
