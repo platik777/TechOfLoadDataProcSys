@@ -24,7 +24,7 @@ public class ReaderRepository : IReaderRepository
         {
             var rateLimitEntities = await _rateLimits.Find(Builders<RateLimitEntity>.Filter.Empty).ToListAsync();
             var rateLimits = rateLimitEntities.Select(entity => _rateLimitMapper.MapToRateLimit(entity)).ToList();
-        
+            
             return rateLimits;
         }
         catch (Exception ex)
