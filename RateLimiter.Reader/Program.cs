@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddGrpc();
-builder.Services.AddSingleton<IReaderRepository, ReaderRepository>();
+builder.Services.AddSingleton<ILocalReaderRepository, LocalReaderRepository>();
 builder.Services.AddScoped<IReaderService, ReaderService>();
 builder.Services.AddSingleton<IRateLimitToRateLimitReplyMapper, RateLimitToRateLimitReplyMapper>();
 builder.Services.AddSingleton<IRateLimitEntityToRateLimitMapper, RateLimitEntityToRateLimitMapper>();

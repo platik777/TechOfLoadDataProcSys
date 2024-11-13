@@ -1,8 +1,8 @@
 ﻿using RateLimiter.Reader.Models;
 
-namespace RateLimiter.Reader.Services;
+namespace RateLimiter.Reader.Repositories;
 
-public interface IReaderService
+public interface ILocalReaderRepository
 {
     IAsyncEnumerable<RateLimit> GetAllRateLimitsAsync();
     Task AddRateLimitAsync(RateLimit rateLimit);

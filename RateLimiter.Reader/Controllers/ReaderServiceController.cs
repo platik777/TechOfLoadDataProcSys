@@ -17,9 +17,9 @@ public class ReaderServiceController : ReaderService.ReaderServiceBase
         _rateLimitMapper = rateLimitMapper;
     }
 
-    public override async Task<RateLimitsReply> GetRateLimits(GetRateLimitsRequest request, ServerCallContext context)
+    public override Task<RateLimitsReply> GetRateLimits(GetRateLimitsRequest request, ServerCallContext context)
     {
-        var rateLimits = await _readerService.GetRateLimits(request);
+        var rateLimits =  _readerService.GetAllRateLimitsAsync();
         
         return _rateLimitMapper.MapToRateLimitReply(rateLimits);
     }
