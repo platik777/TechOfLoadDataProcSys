@@ -1,11 +1,7 @@
-﻿using RateLimiter.Reader.Models;
-
-namespace RateLimiter.Reader.Services;
+﻿namespace RateLimiter.Reader.Services;
 
 public interface IReaderService
 {
-    IAsyncEnumerable<RateLimit> GetAllRateLimitsAsync();
-    Task AddRateLimitAsync(RateLimit rateLimit);
-    Task UpdateRateLimitAsync(RateLimit rateLimit);
-    Task RemoveRateLimitAsync(string route);
+    Task WatchRateLimitChangesAsync(CancellationToken cancellationToken);
+    Task LoadRateLimitsInBatchesAsync(CancellationToken cancellationToken, int batchSize = 1000);
 }
