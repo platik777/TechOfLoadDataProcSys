@@ -23,13 +23,14 @@ public class ReaderRepository : IReaderRepository
             .Skip(skip)
             .Limit(limit)
             .ToListAsync();
+        Console.WriteLine("Get batches");
 
         return rateLimitEntities.ConvertAll(entity => _rateLimitMapper.MapToRateLimit(entity));
     }
     
     public Task<IChangeStreamCursor<ChangeStreamDocument<RateLimitEntity>>> WatchRateLimitChanges()
     {
-        return _rateLimitsCollection.WatchAsync();
+         return _rateLimitsCollection.WatchAsync();
     }
     
     public RateLimit MapChangeToRateLimit(ChangeStreamDocument<RateLimitEntity> change)
