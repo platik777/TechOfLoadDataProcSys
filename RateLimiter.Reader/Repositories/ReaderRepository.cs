@@ -30,7 +30,12 @@ public class ReaderRepository : IReaderRepository
     
     public Task<IChangeStreamCursor<ChangeStreamDocument<RateLimitEntity>>> WatchRateLimitChanges()
     {
-         return _rateLimitsCollection.WatchAsync();
+        var options = new ChangeStreamOptions
+        {
+            FullDocument = ChangeStreamFullDocumentOption.UpdateLookup
+        };
+
+        return _rateLimitsCollection.WatchAsync(options);
     }
     
     public RateLimit MapChangeToRateLimit(ChangeStreamDocument<RateLimitEntity> change)
