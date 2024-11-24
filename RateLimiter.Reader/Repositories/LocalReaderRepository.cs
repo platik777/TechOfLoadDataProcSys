@@ -5,69 +5,35 @@ namespace RateLimiter.Reader.Repositories;
 
 public class LocalReaderRepository : ILocalReaderRepository
 {
-    private readonly ConcurrentBag<RateLimit> _rateLimits;
+    private readonly ConcurrentDictionary<string, RateLimit> _rateLimits;
 
     public LocalReaderRepository()
     {
-        _rateLimits = new ConcurrentBag<RateLimit>();
-    }
-
-    public Task AddRateLimitAsync(RateLimit rateLimit)
-    {
-        if (!_rateLimits.Any(r => r.Route == rateLimit.Route))
-        {
-            _rateLimits.Add(rateLimit);
-        }
-        return Task.CompletedTask;
+        _rateLimits = new ConcurrentDictionary<string, RateLimit>();
     }
     
-    public Task UpdateRateLimitAsync(RateLimit rateLimit)
+    public bool AddRateLimit(RateLimit rateLimit)
     {
-        var updatedRateLimits = _rateLimits
-            .Where(r => r.Route != rateLimit.Route)
-            .ToList();
-        updatedRateLimits.Add(rateLimit);
-        
-        _rateLimits.Clear();
-        
-        foreach (var updatedRateLimit in updatedRateLimits)
-        {
-            _rateLimits.Add(updatedRateLimit);
-        }
-
-        return Task.CompletedTask;
+        return _rateLimits.TryAdd(rateLimit.Route, rateLimit);
     }
 
-    public async IAsyncEnumerable<RateLimit> GetAllRateLimitsAsync()
+    
+    public bool UpdateRateLimit(RateLimit rateLimit)
     {
-        foreach (var rateLimit in _rateLimits)
+        if (_rateLimits.TryGetValue(rateLimit.Route, out var currentValue))
         {
-            yield return rateLimit;
-            await Task.Yield(); 
+           return _rateLimits.TryUpdate(rateLimit.Route, rateLimit, currentValue);
         }
+        return false;
     }
-
-    public Task RemoveRateLimitAsync(string route)
+    
+    public IEnumerable<RateLimit> GetAllRateLimits()
     {
-        var remainingRateLimits = _rateLimits
-            .Where(r => r.Route != route)
-            .ToList();
-        
-        _rateLimits.Clear();
-        
-        foreach (var remainingRateLimit in remainingRateLimits)
-        {
-            _rateLimits.Add(remainingRateLimit);
-        }
-
-        return Task.CompletedTask;
+        return _rateLimits.Values;
     }
-
-    public async IAsyncEnumerable<RateLimit> GetRateLimitChangesAsync()
+    
+    public bool RemoveRateLimit(string route)
     {
-        await foreach (var rateLimit in GetAllRateLimitsAsync())
-        {
-            yield return rateLimit;
-        }
+        return _rateLimits.TryRemove(route, out _);
     }
 }

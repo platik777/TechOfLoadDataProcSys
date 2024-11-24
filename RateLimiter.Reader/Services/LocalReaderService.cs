@@ -14,22 +14,22 @@ public class LocalReaderService : ILocalReaderService
 
     public IAsyncEnumerable<RateLimit> GetAllRateLimitsAsync()
     {
-        return _localReaderRepository.GetAllRateLimitsAsync();
+        return _localReaderRepository.GetAllRateLimits();
     }
 
     
     public async Task AddRateLimitAsync(RateLimit rateLimit)
     {
-        await _localReaderRepository.AddRateLimitAsync(rateLimit);
+        await _localReaderRepository.AddRateLimit(rateLimit);
     }
 
     public async Task UpdateRateLimitAsync(RateLimit rateLimit)
     {
-        await _localReaderRepository.UpdateRateLimitAsync(rateLimit);
+        await _localReaderRepository.UpdateRateLimit(rateLimit);
     }
     
     public Task RemoveRateLimitAsync(string route)
     {
-        return _localReaderRepository.RemoveRateLimitAsync(route);
+        return _localReaderRepository.RemoveRateLimit(route);
     }
 }
