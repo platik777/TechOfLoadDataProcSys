@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using MongoDB.Driver;
+using RateLimiter.Reader.CustomExceptions;
 using RateLimiter.Reader.Models;
 using RateLimiter.Reader.Models.Entities;
 using RateLimiter.Reader.Services;
@@ -52,13 +53,13 @@ public class ReaderRepository : IReaderRepository
         {
             foreach (var change in changeStream.Current)
             {
-                if (change.FullDocument == null) continue;
+                if (change.FullDocument == null)
+                    throw new MissingFullDocumentException("ChangeStream document is missing a FullDocument.");
 
                 if (change.OperationType is not (ChangeStreamOperationType.Update or ChangeStreamOperationType.Delete))
-                    Console.WriteLine($"Unhandled operation type: {change.OperationType}");
-                
-                var rateLimit = _rateLimitMapper.MapToRateLimit(change.FullDocument);
+                    throw new UnsupportedOperationTypeException($"Unsupported operation type: {change.OperationType}");
 
+                var rateLimit = _rateLimitMapper.MapToRateLimit(change.FullDocument);
                 yield return (change.OperationType, rateLimit);
             }
         }

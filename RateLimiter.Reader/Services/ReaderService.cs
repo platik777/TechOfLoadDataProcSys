@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using MongoDB.Driver;
+using RateLimiter.Reader.CustomExceptions;
 using RateLimiter.Reader.Models;
 using RateLimiter.Reader.Repositories;
 
@@ -22,27 +23,36 @@ public class ReaderService : IReaderService
         
         await foreach (var rateLimit in rateLimits.WithCancellation(cancellationToken))
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             _rateLimits.TryAdd(rateLimit.Route, rateLimit);
         }
     }
 
     public async Task WatchRateLimitChangesAsync(CancellationToken cancellationToken)
     {
-        await foreach (var (operationType, rateLimit) in _databaseRepository.WatchRateLimitChangesAsync(cancellationToken))
+        try
         {
-            switch (operationType)
+            await foreach (var (operationType, rateLimit) in _databaseRepository.WatchRateLimitChangesAsync(cancellationToken))
             {
-                case ChangeStreamOperationType.Update:
-                    if (_rateLimits.TryGetValue(rateLimit.Route, out var currentValue))
-                        _rateLimits.TryUpdate(rateLimit.Route, rateLimit, currentValue);
-                    break;
-                case ChangeStreamOperationType.Delete:
+                if (operationType == ChangeStreamOperationType.Update)
+                {
+                    _rateLimits.TryGetValue(rateLimit.Route, out var currentValue);
+                    _rateLimits.TryUpdate(rateLimit.Route, rateLimit, currentValue);
+                }
+                else if (operationType == ChangeStreamOperationType.Delete)
+                {
                     _rateLimits.TryRemove(rateLimit.Route, out _);
-                    break;
+                }
             }
         }
+        catch (Exception ex) when (ex is MissingFullDocumentException or UnsupportedOperationTypeException)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Unexpected error: {ex.Message}");
+        }
+        
     }
     
     public IEnumerable<RateLimit> GetAllRateLimits()
