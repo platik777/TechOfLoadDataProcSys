@@ -6,27 +6,21 @@ namespace RateLimiter.Reader.Controllers;
 
 public class ReaderServiceController : ReaderService.ReaderServiceBase
 {
-    private readonly ILocalReaderService _localReaderService;
+    private readonly IReaderService _readerService;
     private readonly IRateLimitToRateLimitReplyMapper _rateLimitMapper;
 
-    public ReaderServiceController(
-        ILocalReaderService localReaderService,
-        IRateLimitToRateLimitReplyMapper rateLimitMapper)
+    public ReaderServiceController(IReaderService readerService, IRateLimitToRateLimitReplyMapper rateLimitMapper)
     {
-        _localReaderService = localReaderService;
+        _readerService = readerService;
         _rateLimitMapper = rateLimitMapper;
     }
 
-    public override async Task<RateLimitsReply> GetRateLimits(GetRateLimitsRequest request, ServerCallContext context)
+    public override Task<RateLimitsReply> GetRateLimits(GetRateLimitsRequest request, ServerCallContext context)
     {
-        var rateLimitsList = new List<RateLimit>();
-
-        await foreach (var rateLimit in _localReaderService.GetAllRateLimitsAsync())
-        {
-            rateLimitsList.Add(rateLimit);
-        }
-
-        return _rateLimitMapper.MapToRateLimitReply(rateLimitsList);
+        var rateLimits = _readerService.GetAllRateLimits().ToList();
+        var rateLimitsReply = _rateLimitMapper.MapToRateLimitReply(rateLimits);
+        
+        return Task.FromResult(rateLimitsReply);
     }
 
 }

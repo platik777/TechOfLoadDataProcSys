@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using MongoDB.Driver;
 using RateLimiter.Reader.Models;
 using RateLimiter.Reader.Models.Entities;
@@ -15,31 +16,51 @@ public class ReaderRepository : IReaderRepository
         _rateLimitsCollection = mongoDbService.GetCollection<RateLimitEntity>("rate_limits");
         _rateLimitMapper = rateLimitMapper;
     }
-    
-    public async Task<List<RateLimit>> GetRateLimitsBatchAsync(int skip, int limit)
-    {
-        var rateLimitEntities = await _rateLimitsCollection
-            .Find(_ => true)
-            .Skip(skip)
-            .Limit(limit)
-            .ToListAsync();
-        Console.WriteLine("Get batches");
 
-        return rateLimitEntities.ConvertAll(entity => _rateLimitMapper.MapToRateLimit(entity));
+    public async IAsyncEnumerable<RateLimit> GetRateLimitsBatchAsync(int batchSize)
+    {
+        var filter = Builders<RateLimitEntity>.Filter.Empty;
+        var options = new FindOptions<RateLimitEntity, RateLimitEntity>
+        {
+            BatchSize = batchSize
+        };
+
+        using var cursor = await _rateLimitsCollection.FindAsync(filter: filter, options: options);
+
+        while (await cursor.MoveNextAsync())
+        {
+            foreach (var rateLimitEntity in cursor.Current)
+            {
+                var rateLimit = _rateLimitMapper.MapToRateLimit(rateLimitEntity);
+                yield return rateLimit;
+            }
+        }
     }
-    
-    public Task<IChangeStreamCursor<ChangeStreamDocument<RateLimitEntity>>> WatchRateLimitChanges()
+
+    public async IAsyncEnumerable<(ChangeStreamOperationType OperationType, RateLimit RateLimit)>
+        WatchRateLimitChangesAsync(
+            [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var options = new ChangeStreamOptions
         {
             FullDocument = ChangeStreamFullDocumentOption.UpdateLookup
         };
 
-        return _rateLimitsCollection.WatchAsync(options);
-    }
-    
-    public RateLimit MapChangeToRateLimit(ChangeStreamDocument<RateLimitEntity> change)
-    {
-        return _rateLimitMapper.MapToRateLimit(change.FullDocument);
+        using var changeStream = await _rateLimitsCollection.WatchAsync(options, cancellationToken);
+
+        while (await changeStream.MoveNextAsync(cancellationToken))
+        {
+            foreach (var change in changeStream.Current)
+            {
+                if (change.FullDocument == null) continue;
+
+                if (change.OperationType is not (ChangeStreamOperationType.Update or ChangeStreamOperationType.Delete))
+                    Console.WriteLine($"Unhandled operation type: {change.OperationType}");
+                
+                var rateLimit = _rateLimitMapper.MapToRateLimit(change.FullDocument);
+
+                yield return (change.OperationType, rateLimit);
+            }
+        }
     }
 }

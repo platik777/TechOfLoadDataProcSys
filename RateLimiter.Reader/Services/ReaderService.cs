@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using System.Collections.Concurrent;
+using MongoDB.Driver;
 using RateLimiter.Reader.Models;
 using RateLimiter.Reader.Repositories;
 
@@ -7,58 +8,45 @@ namespace RateLimiter.Reader.Services;
 public class ReaderService : IReaderService
 {
     private readonly IReaderRepository _databaseRepository;
-    private readonly ILocalReaderService _localReaderService;
-    private int _offset;
+    private readonly ConcurrentDictionary<string, RateLimit> _rateLimits;
 
-    public ReaderService(
-        IReaderRepository databaseRepository,
-        ILocalReaderService localReaderService)
+    public ReaderService(IReaderRepository databaseRepository)
     {
         _databaseRepository = databaseRepository;
-        _localReaderService = localReaderService;
-        _offset = 0;
+        _rateLimits = new ConcurrentDictionary<string, RateLimit>();
     }
 
     public async Task LoadRateLimitsInBatchesAsync(CancellationToken cancellationToken, int batchSize = 1000)
     {
-        List<RateLimit> batch;
-
-        do
+        var rateLimits = _databaseRepository.GetRateLimitsBatchAsync(batchSize);
+        
+        await foreach (var rateLimit in rateLimits.WithCancellation(cancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            batch = await _databaseRepository.GetRateLimitsBatchAsync(_offset, batchSize);
-            foreach (var rateLimit in batch)
-            {
-                await _localReaderService.AddRateLimitAsync(rateLimit);
-            }
-
-            _offset += batch.Count;
-        } while (batch.Count == batchSize);
+            _rateLimits.TryAdd(rateLimit.Route, rateLimit);
+        }
     }
 
     public async Task WatchRateLimitChangesAsync(CancellationToken cancellationToken)
     {
-        try
+        await foreach (var (operationType, rateLimit) in _databaseRepository.WatchRateLimitChangesAsync(cancellationToken))
         {
-            using var cursor = await _databaseRepository.WatchRateLimitChanges();
-
-            while (await cursor.MoveNextAsync(cancellationToken)) 
+            switch (operationType)
             {
-                if (cancellationToken.IsCancellationRequested)
+                case ChangeStreamOperationType.Update:
+                    if (_rateLimits.TryGetValue(rateLimit.Route, out var currentValue))
+                        _rateLimits.TryUpdate(rateLimit.Route, rateLimit, currentValue);
                     break;
-
-                foreach (var change in cursor.Current) 
-                {
-                    var updatedRateLimit = _databaseRepository.MapChangeToRateLimit(change);
-                    await _localReaderService.UpdateRateLimitAsync(updatedRateLimit);
-                }
+                case ChangeStreamOperationType.Delete:
+                    _rateLimits.TryRemove(rateLimit.Route, out _);
+                    break;
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error watching rate limit changes: {ex.Message}");
-            throw;
-        }
+    }
+    
+    public IEnumerable<RateLimit> GetAllRateLimits()
+    {
+        return _rateLimits.Values;
     }
 }
