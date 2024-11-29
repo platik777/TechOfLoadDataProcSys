@@ -1,7 +1,20 @@
-var builder = WebApplication.CreateBuilder(args);
+using UserService.Services;
 
-builder.Services.AddGrpc();
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CreateHostBuilder(args).Build().Run();
+    }
 
-var app = builder.Build();
-
-await app.RunAsync("http://*:5002");
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>()
+                    .ConfigureKestrel(options =>
+                    {
+                        options.ListenAnyIP(5002);
+                    });
+            });
+}

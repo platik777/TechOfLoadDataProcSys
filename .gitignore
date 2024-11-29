@@ -10,6 +10,8 @@
 *.userosscache
 *.sln.docstates
 /**/**/.idea/*
+RateLimiter.Writer/Services/Protos/
+UserService/Services/Protos/
 
 # Protos
 RateLimiter.Writer/Services/Protos/

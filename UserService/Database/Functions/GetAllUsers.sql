@@ -1,0 +1,9 @@
+﻿CREATE OR REPLACE FUNCTION GetAllUsers()
+RETURNS TABLE(id INT, login VARCHAR, password VARCHAR, name VARCHAR, surname VARCHAR, age INT) AS
+$$
+BEGIN
+RETURN QUERY
+SELECT *
+FROM users;
+END;
+$$ LANGUAGE plpgsql;
