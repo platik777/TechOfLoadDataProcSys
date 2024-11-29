@@ -6,10 +6,10 @@ namespace UserService.Repository;
 
 public interface IUserRepository
 {
-    public Task<List<UserEntity>> GetAllAsync(CancellationToken cancellationToken);
-    public Task<UserEntity> GetByIdAsync(int id, CancellationToken cancellationToken);
-    public Task<List<UserEntity>> GetByNameAsync(string name, CancellationToken cancellationToken);
-    public Task<List<UserEntity>> GetBySurnameAsync(string surname, CancellationToken cancellationToken);
+    public Task<List<User>> GetAllAsync(CancellationToken cancellationToken);
+    public Task<User?> GetByIdAsync(int id, CancellationToken cancellationToken);
+    public Task<List<User>> GetByNameAsync(string name, CancellationToken cancellationToken);
+    public Task<List<User>> GetBySurnameAsync(string surname, CancellationToken cancellationToken);
     public Task<int> CreateUserAsync(User user, CancellationToken cancellationToken);
     public Task UpdateAsync(User user, CancellationToken cancellationToken);
     public Task DeleteAsync(int id, CancellationToken cancellationToken);
