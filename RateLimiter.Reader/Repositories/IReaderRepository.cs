@@ -6,8 +6,8 @@ namespace RateLimiter.Reader.Repositories;
 
 public interface IReaderRepository
 {
-    IAsyncEnumerable<RateLimit> GetRateLimitsBatchAsync(int batchSize);
+    IAsyncEnumerable<(string id, RateLimit rateLimit)> GetRateLimitsBatchAsync(int batchSize);
 
-    IAsyncEnumerable<(ChangeStreamOperationType OperationType, RateLimit RateLimit)> WatchRateLimitChangesAsync(
+    IAsyncEnumerable<(ChangeStreamOperationType OperationType, string? id, RateLimit? RateLimit)> WatchRateLimitChangesAsync(
         CancellationToken cancellationToken);
 }

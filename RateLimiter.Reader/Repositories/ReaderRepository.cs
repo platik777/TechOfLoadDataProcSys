@@ -18,7 +18,7 @@ public class ReaderRepository : IReaderRepository
         _rateLimitMapper = rateLimitMapper;
     }
 
-    public async IAsyncEnumerable<RateLimit> GetRateLimitsBatchAsync(int batchSize)
+    public async IAsyncEnumerable<(string id, RateLimit rateLimit)> GetRateLimitsBatchAsync(int batchSize)
     {
         var filter = Builders<RateLimitEntity>.Filter.Empty;
         var options = new FindOptions<RateLimitEntity, RateLimitEntity>
@@ -33,12 +33,12 @@ public class ReaderRepository : IReaderRepository
             foreach (var rateLimitEntity in cursor.Current)
             {
                 var rateLimit = _rateLimitMapper.MapToRateLimit(rateLimitEntity);
-                yield return rateLimit;
+                yield return (rateLimitEntity.Id, rateLimit);
             }
         }
     }
 
-    public async IAsyncEnumerable<(ChangeStreamOperationType OperationType, RateLimit RateLimit)>
+    public async IAsyncEnumerable<(ChangeStreamOperationType OperationType, string? id, RateLimit? RateLimit)>
         WatchRateLimitChangesAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken)
     {
@@ -53,14 +53,14 @@ public class ReaderRepository : IReaderRepository
         {
             foreach (var change in changeStream.Current)
             {
-                if (change.FullDocument == null)
-                    throw new MissingFullDocumentException("ChangeStream document is missing a FullDocument.");
-
-                if (change.OperationType is not (ChangeStreamOperationType.Update or ChangeStreamOperationType.Delete))
+                if (change.OperationType is not 
+                    (ChangeStreamOperationType.Update
+                    or ChangeStreamOperationType.Delete
+                    or ChangeStreamOperationType.Insert))
                     throw new UnsupportedOperationTypeException($"Unsupported operation type: {change.OperationType}");
-
-                var rateLimit = _rateLimitMapper.MapToRateLimit(change.FullDocument);
-                yield return (change.OperationType, rateLimit);
+                
+                var rateLimit = change.OperationType is ChangeStreamOperationType.Delete ? null : _rateLimitMapper.MapToRateLimit(change.FullDocument);
+                yield return (change.OperationType, change.DocumentKey["_id"].ToString(), rateLimit);
             }
         }
     }

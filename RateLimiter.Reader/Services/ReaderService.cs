@@ -21,9 +21,9 @@ public class ReaderService : IReaderService
     {
         var rateLimits = _databaseRepository.GetRateLimitsBatchAsync(batchSize);
         
-        await foreach (var rateLimit in rateLimits.WithCancellation(cancellationToken))
+        await foreach (var (id, rateLimit) in rateLimits.WithCancellation(cancellationToken))
         {
-            _rateLimits.TryAdd(rateLimit.Route, rateLimit);
+            _rateLimits.TryAdd(id, rateLimit);
         }
     }
 
@@ -31,18 +31,26 @@ public class ReaderService : IReaderService
     {
         try
         {
-            await foreach (var (operationType, rateLimit) in _databaseRepository.WatchRateLimitChangesAsync(cancellationToken))
+            await foreach (var (operationType, id, rateLimit) in _databaseRepository.WatchRateLimitChangesAsync(cancellationToken))
             {
-                if (operationType == ChangeStreamOperationType.Update)
+                if (id is null) throw new NullReferenceException();
+                switch (operationType)
                 {
-                    _rateLimits.TryGetValue(rateLimit.Route, out var currentValue);
-                    _rateLimits.TryUpdate(rateLimit.Route, rateLimit, currentValue);
-                }
-                else if (operationType == ChangeStreamOperationType.Delete)
-                {
-                    _rateLimits.TryRemove(rateLimit.Route, out _);
+                    case ChangeStreamOperationType.Update:
+                        _rateLimits.TryGetValue(id, out var currentValue);
+                        if (rateLimit != null) if (currentValue != null)
+                                _rateLimits.TryUpdate(id, rateLimit, currentValue);
+                        break;
+                    case ChangeStreamOperationType.Delete:
+                        _rateLimits.TryRemove(id, out _);
+                        break;
+                    case ChangeStreamOperationType.Insert:
+
+                        if (rateLimit != null) _rateLimits.TryAdd(id, rateLimit);
+                        break;
                 }
             }
+            
         }
         catch (Exception ex) when (ex is MissingFullDocumentException or UnsupportedOperationTypeException)
         {
