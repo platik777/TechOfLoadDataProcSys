@@ -60,3 +60,38 @@ message UserReply{
 message UserListReply {
   repeated UserReply users = 1;
 }
+
+service RpmService {
+  rpc CreateRpm(CreateRpmRequest) returns (RpmReply);
+  rpc GetRpm(GetRpmRequest) returns (RpmReply);
+  rpc UpdateRpm(UpdateRpmRequest) returns (RpmReply);
+  rpc DeleteRpm(DeleteRpmRequest) returns (RpmReply);
+}
+
+message CreateRpmRequest {
+  string user_id = 1;
+  string endpoint = 2;
+  int32 rpm = 3;
+}
+
+message UpdateRpmRequest {
+  string user_id = 1;
+  string endpoint = 2;
+  int32 rpm = 3;
+}
+
+message GetRpmRequest {
+  string user_id = 1;
+  string endpoint = 2;
+}
+
+message DeleteRpmRequest {
+  string user_id = 1;
+  string endpoint = 2;
+}
+
+message RpmReply {
+  string user_id = 1;
+  string endpoint = 2;
+  int32 rpm = 3;
+}
