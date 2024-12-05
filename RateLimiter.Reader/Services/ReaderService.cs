@@ -69,8 +69,8 @@ public class ReaderService : IReaderService
         
     }
     
-    public List<RateLimit> GetAllRateLimits()
+    public ICollection<RateLimit> GetAllRateLimits()
     {
-        return _rateLimits.Values.ToList();
+        return _rateLimits.Values;
     }
 }
