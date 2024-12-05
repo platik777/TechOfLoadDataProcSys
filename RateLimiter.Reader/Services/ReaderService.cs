@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using MongoDB.Driver;
 using RateLimiter.Reader.CustomExceptions;
 using RateLimiter.Reader.Models;
@@ -33,13 +34,18 @@ public class ReaderService : IReaderService
         {
             await foreach (var (operationType, id, rateLimit) in _databaseRepository.WatchRateLimitChangesAsync(cancellationToken))
             {
-                if (id is null) throw new NullReferenceException();
+                if (id is null)
+                {
+                    throw new NullReferenceException();
+                }
                 switch (operationType)
                 {
                     case ChangeStreamOperationType.Update:
                         _rateLimits.TryGetValue(id, out var currentValue);
-                        if (rateLimit != null) if (currentValue != null)
-                                _rateLimits.TryUpdate(id, rateLimit, currentValue);
+                        if (rateLimit is not null && currentValue is not null)
+                        {
+                            _rateLimits.TryUpdate(id, rateLimit, currentValue);
+                        }
                         break;
                     case ChangeStreamOperationType.Delete:
                         _rateLimits.TryRemove(id, out _);
@@ -63,8 +69,8 @@ public class ReaderService : IReaderService
         
     }
     
-    public IEnumerable<RateLimit> GetAllRateLimits()
+    public List<RateLimit> GetAllRateLimits()
     {
-        return _rateLimits.Values;
+        return _rateLimits.Values.ToList();
     }
 }
