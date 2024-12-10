@@ -47,7 +47,7 @@ public class KafkaHostedService : IHostedService, IDisposable
                 {
                     var serializedMessage = JsonSerializer.Serialize(message, new JsonSerializerOptions
                     {
-                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
                     });
 
                     await _producer.ProduceAsync("events", new Message<Null, string> { Value = serializedMessage }, newCts.Token);
