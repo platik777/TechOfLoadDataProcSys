@@ -31,34 +31,28 @@ public class UserService : IUserService
 
     public async Task<List<User>> GetAllUsers(CancellationToken cancellationToken)
     {
-        var userEntities = await _userRepository.GetAllAsync(cancellationToken);
-
-        return userEntities.Select(userEntity => _userEntityToUserMapper.MapToUser(userEntity)).ToList();
+        return await _userRepository.GetAllAsync(cancellationToken);
     }
 
     public async Task<User> GetUserById(GetUserByIdRequest request, CancellationToken cancellationToken)
     {
-        var userEntity = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
-        if (userEntity == null)
+        var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
+        if (user == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {request.Id} not found"));
         }
 
-        return _userEntityToUserMapper.MapToUser(userEntity);
+        return user;
     }
 
     public async Task<List<User>> GetUserByName(GetUserByNameRequest request, CancellationToken cancellationToken)
     {
-        var users = await _userRepository.GetByNameAsync(request.Name, cancellationToken);
-
-        return users.Select(user => _userEntityToUserMapper.MapToUser(user)).ToList();
+        return await _userRepository.GetByNameAsync(request.Name, cancellationToken);
     }
 
     public async Task<List<User>> GetUserBySurname(GetUserBySurnameRequest request, CancellationToken cancellationToken)
     {
-        var users = await _userRepository.GetBySurnameAsync(request.Surname, cancellationToken);
-
-        return users.Select(user => _userEntityToUserMapper.MapToUser(user)).ToList();
+        return await _userRepository.GetBySurnameAsync(request.Surname, cancellationToken);
     }
 
     public async Task<User> CreateUser(CreateUserRequest request, CancellationToken cancellationToken)
@@ -78,24 +72,18 @@ public class UserService : IUserService
         return user;
     }
 
-    /*{
-        "login": "login",
-        "password": "pass",
-        "name": "dima",
-        "surname": "borisov",
-        "age": 20
-    }*/
-
     public async Task<User> UpdateUser(UpdateUserRequest request, CancellationToken cancellationToken)
     {
-        var existingUserEntity = _userRepository.GetByIdAsync(request.Id, cancellationToken).Result;
+        var existingUser = _userRepository.GetByIdAsync(request.Id, cancellationToken).Result;
 
-        existingUserEntity.Name = request.Name == "" ? existingUserEntity.Name : request.Name;
-        existingUserEntity.Surname = request.Surname == "" ? existingUserEntity.Surname : request.Surname;
-        existingUserEntity.Password = request.Password == "" ? existingUserEntity.Password : request.Password;
-        existingUserEntity.Age = request.Age == 0 ? existingUserEntity.Age : request.Age;
-
-        var existingUser = _userEntityToUserMapper.MapToUser(existingUserEntity);
+        if (existingUser == null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {request.Id} not found"));
+        }
+        existingUser.Name = request.Name == "" ? existingUser.Name : request.Name;
+        existingUser.Surname = request.Surname == "" ? existingUser.Surname : request.Surname;
+        existingUser.Password = request.Password == "" ? existingUser.Password : request.Password;
+        existingUser.Age = request.Age == 0 ? existingUser.Age : request.Age;
 
         var validationResult = await _userUpdateValidator.ValidateAsync(existingUser, cancellationToken);
         if (!validationResult.IsValid)
@@ -112,13 +100,11 @@ public class UserService : IUserService
 
     public async Task<User> DeleteUser(DeleteUserRequest request, CancellationToken cancellationToken)
     {
-        var userEntity = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
-        if (userEntity == null)
+        var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
+        if (user == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {request.Id} not found"));
         }
-
-        var user = _userEntityToUserMapper.MapToUser(userEntity);
 
         await _userRepository.DeleteAsync(request.Id, cancellationToken);
 
