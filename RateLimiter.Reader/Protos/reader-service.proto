@@ -5,14 +5,23 @@ option csharp_namespace = "RateLimiter.Reader";
 package reader;
 
 
-service Reader {
-  rpc Ping (PingRequest) returns (PingResponse);
+service ReaderService {
+  rpc GetRateLimits (GetRateLimitsRequest) returns (RateLimitsReply);
 }
 
-message PingRequest {
-  string clientName = 1;
+message GetRateLimitsRequest {}
+
+message GetRateLimitResponse {
+  string route = 1;
+  int32 requests_per_minute = 2;
 }
 
-message PingResponse {
-  string status = 1;
+message RateLimitsReply {
+  repeated GetRateLimitResponse rate_limits = 1;
 }
+
+message RateLimitReply {
+  string route = 1;
+  int32 requests_per_minute = 2;
+}
+

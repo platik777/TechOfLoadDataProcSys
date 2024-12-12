@@ -13,6 +13,9 @@
     <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.57.0"/>
         <PackageReference Include="Grpc.AspNetCore.Server" Version="2.66.0" />
+        <PackageReference Include="MongoDB.Bson" Version="3.0.0" />
+        <PackageReference Include="MongoDB.Driver" Version="3.0.0" />
+        <PackageReference Include="Riok.Mapperly" Version="4.1.0-next.1" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,3 @@
-using MongoDB.Bson;
 using MongoDB.Driver;
 using RateLimiter.Writer.Models;
 using RateLimiter.Writer.Models.Entities;
@@ -19,12 +18,14 @@ public class WriterRepository : IWriterRepository
         _rateLimitMapper = rateLimitMapper;
     }
 
-    public async Task<RateLimit> GetByRouteAsync(string route, CancellationToken cancellationToken)
+    public async Task<RateLimit?> GetByRouteAsync(string route, CancellationToken cancellationToken)
     {
         try
         {
-            return _rateLimitMapper.MapToRateLimit(await _rateLimits.Find(rl => rl.Route == route)
-                                    .FirstOrDefaultAsync(cancellationToken));
+            var rateLimitEntity = await _rateLimits.Find(rl => rl.Route == route)
+                                                   .FirstOrDefaultAsync(cancellationToken);
+
+            return rateLimitEntity != null ? _rateLimitMapper.MapToRateLimit(rateLimitEntity) : null;
         }
         catch (Exception ex)
         {
@@ -73,7 +74,7 @@ public class WriterRepository : IWriterRepository
         try
         {
             var entity = await _rateLimits.Find(rl => rl.Route == route)
-                .FirstOrDefaultAsync(cancellationToken);
+                                          .FirstOrDefaultAsync(cancellationToken);
 
             var result = await _rateLimits.DeleteOneAsync(rl => rl.Route == route, cancellationToken);
 
