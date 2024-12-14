@@ -29,7 +29,6 @@ public class Startup
         services.AddSingleton<ICreateUserRequestToUserMapper, CreateUserRequestToUserMapper>();
         services.AddScoped<IUserService, UserService>();
         
-        services.AddSingleton<IKafkaSenderService, KafkaSenderService>();
         services.AddSingleton<IRpmService, Rpm.RpmService>();
         services.AddSingleton<IRpmRepository, RpmRepository>();
         services.AddSingleton<RpmEntityToRpmModelMapper>();
