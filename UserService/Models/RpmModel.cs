@@ -1,3 +1,3 @@
 ﻿namespace UserService.Models;
 
-public record RpmModel(string UserId, string Endpoint, int Rpm);
+public record RpmModel(long UserId, string Endpoint, int Rpm);

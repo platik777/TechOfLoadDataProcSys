@@ -37,7 +37,7 @@ public class RpmRepository : IRpmRepository
         return _mapper.MapToModel(entity);
     }
 
-    public RpmModel GetRpm(string userId, string route)
+    public RpmModel GetRpm(long userId, string route)
     {
         string key = GenerateKey(userId, route);
 
@@ -70,7 +70,7 @@ public class RpmRepository : IRpmRepository
         return _mapper.MapToModel(entity);
     }
 
-    public RpmModel DeleteRpm(string userId, string route)
+    public RpmModel DeleteRpm(long userId, string route)
     {
         string key = GenerateKey(userId, route);
 
@@ -84,5 +84,5 @@ public class RpmRepository : IRpmRepository
         return _mapper.MapToModel(entity);
     }
 
-    private static string GenerateKey(string userId, string route) => $"{userId}_{route}";
+    private static string GenerateKey(long userId, string route) => $"{userId}_{route}";
 }

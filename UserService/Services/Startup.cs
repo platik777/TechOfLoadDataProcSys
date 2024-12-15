@@ -1,10 +1,12 @@
 ﻿using FluentValidation;
 using UserService.Controllers;
+using UserService.Interceptors;
 using UserService.Mapper;
 using UserService.Models;
 using UserService.Repository;
 using UserService.Repository.Rpm;
 using UserService.Services.Kafka;
+using UserService.Services.Redis;
 using UserService.Services.Rpm;
 using UserService.Services.Validators;
 using RpmDtoToRpmModelMapper = UserService.Mapper.RpmDtoToRpmModelMapper;
@@ -34,6 +36,15 @@ public class Startup
         services.AddSingleton<RpmEntityToRpmModelMapper>();
         services.AddSingleton<RpmModelToRpmEntityMapper>();
         services.AddSingleton<RpmDtoToRpmModelMapper>();
+        
+        services.AddSingleton<IRedisService, RedisService>();
+        
+        services.AddSingleton<AuthInterceptor>();
+        services.AddGrpc(options =>
+        {
+            
+            options.Interceptors.Add<AuthInterceptor>();
+        });
         
         services.AddSingleton<KafkaHostedService>(provider =>
         {
