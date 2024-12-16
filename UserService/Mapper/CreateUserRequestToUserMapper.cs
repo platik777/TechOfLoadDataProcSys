@@ -6,5 +6,5 @@ namespace UserService.Mapper;
 [Mapper]
 public partial class CreateUserRequestToUserMapper : ICreateUserRequestToUserMapper
 {
-    public partial User CreateUserRequestToUser(CreateUserRequest user);
+    public partial IUser CreateUserRequestToUser(CreateUserRequest user);
 }

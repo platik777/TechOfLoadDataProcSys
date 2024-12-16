@@ -1,10 +1,9 @@
 ﻿using UserService.Models;
 
-namespace UserService.Database.Entities;
+namespace UserService;
 
-public class UserEntity : IUser
+public partial class GetUserByIdRequest : IUser
 {
-    public int Id { get; set; }
     public string? Login { get; set; }
     public string? Password { get; set; }
     public string? Name { get; set; }

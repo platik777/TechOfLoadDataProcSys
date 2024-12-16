@@ -3,7 +3,7 @@ using UserService.Models;
 
 namespace UserService.Services.Validators;
 
-public class UserUpdateValidator : AbstractValidator<User> 
+public class UserUpdateValidator : AbstractValidator<IUser>
 {
     public UserUpdateValidator()
     {

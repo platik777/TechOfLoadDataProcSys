@@ -7,5 +7,5 @@ namespace UserService.Mapper;
 [Mapper]
 public partial class UserEntityToUserMapper : IUserEntityToUserMapper
 {
-    public partial User MapToUser(UserEntity user);
+    public partial IUser MapToUser(UserEntity user);
 }

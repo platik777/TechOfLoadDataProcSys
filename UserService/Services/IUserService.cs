@@ -4,11 +4,11 @@ namespace UserService.Services;
 
 public interface IUserService
 {
-    Task<List<User>> GetAllUsers(CancellationToken cancellationToken);
-    Task<User> GetUserById(GetUserByIdRequest request, CancellationToken cancellationToken);
-    Task<List<User>> GetUserByName(GetUserByNameRequest request, CancellationToken cancellationToken);
-    Task<List<User>> GetUserBySurname(GetUserBySurnameRequest request, CancellationToken cancellationToken);
-    Task<User> CreateUser(CreateUserRequest request, CancellationToken cancellationToken);
-    Task<User> UpdateUser(UpdateUserRequest request, CancellationToken cancellationToken);
-    Task<User> DeleteUser(DeleteUserRequest request, CancellationToken cancellationToken);
+    Task<List<IUser>> GetAllUsers(CancellationToken cancellationToken);
+    Task<IUser> GetUserById(IUser request, CancellationToken cancellationToken);
+    Task<List<IUser>> GetUserByName(IUser request, CancellationToken cancellationToken);
+    Task<List<IUser>> GetUserBySurname(IUser request, CancellationToken cancellationToken);
+    Task<IUser> CreateUser(IUser request, CancellationToken cancellationToken);
+    Task<IUser> UpdateUser(IUser request, CancellationToken cancellationToken);
+    Task<IUser> DeleteUser(IUser request, CancellationToken cancellationToken);
 }

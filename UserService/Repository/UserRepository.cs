@@ -21,7 +21,7 @@ public class UserRepository : IUserRepository
         _userEntityToUserMapper = userEntityToUserMapper;
     }
     
-    public async Task<List<User>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<IUser>> GetAllAsync(CancellationToken cancellationToken)
     {
         var query = "SELECT * FROM getAllUsers()";
         
@@ -29,12 +29,12 @@ public class UserRepository : IUserRepository
         {
             var command = new CommandDefinition(query, cancellationToken: cancellationToken);
             var result = await connection.QueryAsync<UserEntity>(command);
-            var userEntityList = result.ToList();
-            return userEntityList.Select(t => _userEntityToUserMapper.MapToUser(t)).ToList();
+            var userList = result.Select(u => (IUser)u).ToList();
+            return userList;;
         }
     }
 
-    public async Task<User?> GetByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<IUser?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
         var parameters = new DynamicParameters();
         parameters.Add("Id", id);
@@ -45,16 +45,11 @@ public class UserRepository : IUserRepository
         {
             var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
             var result =  await connection.QueryFirstOrDefaultAsync<UserEntity>(command);
-            if (result != null)
-            {
-                return _userEntityToUserMapper.MapToUser(result);
-            }
-
-            return null;
+            return result ?? null;
         }
     }
     
-    public async Task<List<User>> GetByNameAsync(string name, CancellationToken cancellationToken)
+    public async Task<List<IUser>> GetByNameAsync(string name, CancellationToken cancellationToken)
     {
         var parameters = new DynamicParameters();
         parameters.Add("Name", name);
@@ -65,12 +60,12 @@ public class UserRepository : IUserRepository
         {
             var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
             var result = await connection.QueryAsync<UserEntity>(command);
-            var userEntityList = result.ToList();
-            return userEntityList.Select(t => _userEntityToUserMapper.MapToUser(t)).ToList();
+            var userList = result.Select(u => (IUser)u).ToList();
+            return userList;
         }
     }
 
-    public async Task<List<User>> GetBySurnameAsync(string surname, CancellationToken cancellationToken)
+    public async Task<List<IUser>> GetBySurnameAsync(string surname, CancellationToken cancellationToken)
     {
         var parameters = new DynamicParameters();
         parameters.Add("Surname", surname);
@@ -81,12 +76,12 @@ public class UserRepository : IUserRepository
         {
             var command = new CommandDefinition(query, parameters: parameters, cancellationToken: cancellationToken);
             var result = await connection.QueryAsync<UserEntity>(command);
-            var userEntityList = result.ToList();
-            return userEntityList.Select(t => _userEntityToUserMapper.MapToUser(t)).ToList();
+            var userList = result.Select(u => (IUser)u).ToList();
+            return userList;
         }
     }
 
-    public async Task<int> CreateUserAsync(User user, CancellationToken cancellationToken)
+    public async Task<int> CreateUserAsync(IUser user, CancellationToken cancellationToken)
     {
         var parameters = new DynamicParameters();
         parameters.Add("Login", user.Login);
@@ -111,7 +106,7 @@ public class UserRepository : IUserRepository
     }
 
 
-    public async Task UpdateAsync(User user, CancellationToken cancellationToken)
+    public async Task UpdateAsync(IUser user, CancellationToken cancellationToken)
     {
         var parameters = new DynamicParameters();
         parameters.Add("Id", user.Id);

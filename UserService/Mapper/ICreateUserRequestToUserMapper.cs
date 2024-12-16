@@ -4,5 +4,5 @@ namespace UserService.Mapper;
 
 public interface ICreateUserRequestToUserMapper
 { 
-    User CreateUserRequestToUser(CreateUserRequest user);
+    IUser CreateUserRequestToUser(CreateUserRequest user);
 }

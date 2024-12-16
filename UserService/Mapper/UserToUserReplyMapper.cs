@@ -6,5 +6,5 @@ namespace UserService.Mapper;
 [Mapper]
 public partial class UserToUserReplyMapper : IUserToUserReplyMapper
 {
-    public partial UserReply MapToUserReply(User user);
+    public partial UserReply MapToUserReply(IUser user);
 }

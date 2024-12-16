@@ -24,8 +24,8 @@ public class Startup
         
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton<DbService>();
-        services.AddSingleton<IValidator<User>, UserCreateValidator>();
-        services.AddSingleton<IValidator<User>, UserUpdateValidator>();
+        services.AddSingleton<IValidator<IUser>, UserCreateValidator>();
+        services.AddSingleton<IValidator<IUser>, UserUpdateValidator>();
         services.AddSingleton<IUserToUserReplyMapper, UserToUserReplyMapper>();
         services.AddSingleton<IUserEntityToUserMapper, UserEntityToUserMapper>();
         services.AddSingleton<ICreateUserRequestToUserMapper, CreateUserRequestToUserMapper>();
@@ -36,6 +36,7 @@ public class Startup
         services.AddSingleton<RpmEntityToRpmModelMapper>();
         services.AddSingleton<RpmModelToRpmEntityMapper>();
         services.AddSingleton<RpmDtoToRpmModelMapper>();
+        services.AddMemoryCache();
         
         services.AddSingleton<IRedisService, RedisService>();
         

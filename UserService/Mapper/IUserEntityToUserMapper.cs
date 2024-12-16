@@ -5,5 +5,5 @@ namespace UserService.Mapper;
 
 public interface IUserEntityToUserMapper
 {
-    User MapToUser(UserEntity user);
+    IUser MapToUser(UserEntity user);
 }
