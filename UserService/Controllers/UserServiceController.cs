@@ -27,7 +27,7 @@ public class UserServiceController : UserService.UserServiceBase
 
     public override async Task<UserReply> GetUserById(GetUserByIdRequest request, ServerCallContext context)
     {
-        var user = await _userService.GetUserById(request, context.CancellationToken);
+        var user = await _userService.GetUserById(request.Id, context.CancellationToken);
         return _userToUserReplyMapper.MapToUserReply(user);
     }
 
@@ -45,13 +45,13 @@ public class UserServiceController : UserService.UserServiceBase
 
     public override async Task<UserReply> DeleteUser(DeleteUserRequest request, ServerCallContext context)
     {
-        var user = await _userService.DeleteUser(request, context.CancellationToken);
+        var user = await _userService.DeleteUser(request.Id, context.CancellationToken);
         return _userToUserReplyMapper.MapToUserReply(user);
     }
 
     public override async Task<UserListReply> GetUserByName(GetUserByNameRequest request, ServerCallContext context)
     {
-        var users = await _userService.GetUserByName(request, context.CancellationToken);
+        var users = await _userService.GetUserByName(request.Name, context.CancellationToken);
         var userListReply = new UserListReply();
         userListReply.Users.AddRange(users.Select(user => _userToUserReplyMapper.MapToUserReply(user)));
         return userListReply;
@@ -59,7 +59,7 @@ public class UserServiceController : UserService.UserServiceBase
 
     public override async Task<UserListReply> GetUserBySurname(GetUserBySurnameRequest request, ServerCallContext context)
     {
-        var users = await _userService.GetUserBySurname(request, context.CancellationToken);
+        var users = await _userService.GetUserBySurname(request.Surname, context.CancellationToken);
         var userListReply = new UserListReply();
         userListReply.Users.AddRange(users.Select(user => _userToUserReplyMapper.MapToUserReply(user)));
         return userListReply;

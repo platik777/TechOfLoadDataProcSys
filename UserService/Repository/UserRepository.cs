@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using Dapper;
+﻿using Dapper;
 using Grpc.Core;
 using Npgsql;
 using UserService.Database.Entities;
-using UserService.Mapper;
-using UserService.Models;
+using UserService.Models.DomainInterfaces;
 using UserService.Services;
 
 namespace UserService.Repository;
@@ -12,13 +10,11 @@ namespace UserService.Repository;
 public class UserRepository : IUserRepository
 {
     private readonly DbService _dbService;
-    private readonly IUserEntityToUserMapper _userEntityToUserMapper;
     
 
-    public UserRepository(DbService dbService, IUserEntityToUserMapper userEntityToUserMapper)
+    public UserRepository(DbService dbService)
     {
         _dbService = dbService;
-        _userEntityToUserMapper = userEntityToUserMapper;
     }
     
     public async Task<List<IUser>> GetAllAsync(CancellationToken cancellationToken)

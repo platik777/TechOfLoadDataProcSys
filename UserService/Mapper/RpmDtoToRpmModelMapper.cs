@@ -4,8 +4,9 @@ using UserService.Models;
 namespace UserService.Mapper;
 
 [Mapper]
+[Obsolete("Not used any more")]
 public partial class RpmDtoToRpmModelMapper
 {
-    public partial RpmModel CreateDtoMapToRpmModel(CreateRpmRequest request);
-    public partial RpmModel UpdateDtoMapToRpmModel(UpdateRpmRequest request);
+    public partial IRpmModel CreateDtoMapToRpmModel(CreateRpmRequest request);
+    public partial IRpmModel UpdateDtoMapToRpmModel(UpdateRpmRequest request);
 }

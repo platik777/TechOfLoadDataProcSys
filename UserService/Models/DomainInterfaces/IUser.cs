@@ -1,9 +1,8 @@
-﻿using UserService.Models;
+﻿namespace UserService.Models.DomainInterfaces;
 
-namespace UserService;
-
-public partial class GetUserByIdRequest : IUser
+public interface IUser
 {
+    public int Id { get; set; }
     public string? Login { get; set; }
     public string? Password { get; set; }
     public string? Name { get; set; }

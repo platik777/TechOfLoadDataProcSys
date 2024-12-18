@@ -28,7 +28,7 @@ public class RpmServiceController : RpmService.RpmServiceBase
 
     public override Task<RpmReply> GetRpm(GetRpmRequest request, ServerCallContext context)
     {
-        var retrievedRpm = _rpmService.GetRpm(request);
+        var retrievedRpm = _rpmService.GetRpm(request.UserId, request.Endpoint);
 
         var reply = new RpmReply
         {
@@ -56,7 +56,7 @@ public class RpmServiceController : RpmService.RpmServiceBase
 
     public override Task<RpmReply> DeleteRpm(DeleteRpmRequest request, ServerCallContext context)
     {
-        var deletedRpm = _rpmService.DeleteRpm(request);
+        var deletedRpm = _rpmService.DeleteRpm(request.UserId, request.Endpoint);
 
         var reply = new RpmReply
         {

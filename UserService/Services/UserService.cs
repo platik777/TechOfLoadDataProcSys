@@ -1,8 +1,7 @@
 ﻿using FluentValidation;
 using Grpc.Core;
 using Microsoft.Extensions.Caching.Memory;
-using UserService.Mapper;
-using UserService.Models;
+using UserService.Models.DomainInterfaces;
 using UserService.Repository;
 using UserService.Services.Utils;
 
@@ -13,23 +12,17 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IValidator<IUser> _userCreateValidator;
     private readonly IValidator<IUser> _userUpdateValidator;
-    private readonly IUserEntityToUserMapper _userEntityToUserMapper;
-    private readonly ICreateUserRequestToUserMapper _createUserRequestToUserMapper;
     private readonly IMemoryCache _memoryCache;
 
     public UserService(
         IUserRepository userRepository,
         IValidator<IUser> userCreateValidator,
         IValidator<IUser> userUpdateValidator,
-        IUserEntityToUserMapper userEntityToUserMapper, 
-        ICreateUserRequestToUserMapper createUserRequestToUserMapper,
         IMemoryCache memoryCache)
     {
         _userRepository = userRepository;
         _userCreateValidator = userCreateValidator;
         _userUpdateValidator = userUpdateValidator;
-        _userEntityToUserMapper = userEntityToUserMapper;
-        _createUserRequestToUserMapper = createUserRequestToUserMapper;
         _memoryCache = memoryCache;
     }
 
@@ -38,13 +31,13 @@ public class UserService : IUserService
         return await _userRepository.GetAllAsync(cancellationToken);
     }
 
-    public async Task<IUser> GetUserById(IUser request, CancellationToken cancellationToken)
+    public async Task<IUser> GetUserById(int id, CancellationToken cancellationToken)
     {
 
-        _memoryCache.TryGetValue(request.Id, out IUser? user);
+        _memoryCache.TryGetValue(id, out IUser? user);
         if (user == null)
         {
-            user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
+            user = await _userRepository.GetByIdAsync(id, cancellationToken);
             if (user != null)
             {
                 var options = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10));
@@ -52,39 +45,39 @@ public class UserService : IUserService
             }
             else
             {
-                throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {request.Id} not found"));
+                throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {id} not found"));
             }
         }
 
         return user;
     }
 
-    public async Task<List<IUser>> GetUserByName(IUser request, CancellationToken cancellationToken)
+    public async Task<List<IUser>> GetUserByName(string name, CancellationToken cancellationToken)
     {
-        _memoryCache.TryGetValue(request.Name, out List<IUser>? users);
+        _memoryCache.TryGetValue(name, out List<IUser>? users);
         if (users == null)
         {
-            users = await _userRepository.GetByNameAsync(request.Name, cancellationToken);
+            users = await _userRepository.GetByNameAsync(name, cancellationToken);
             if (users.Count != 0)
             {
                 var options = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10));
-                _memoryCache.Set(request.Name, users, options);
+                _memoryCache.Set(name, users, options);
             }
         }
 
         return users;
     }
 
-    public async Task<List<IUser>> GetUserBySurname(IUser request, CancellationToken cancellationToken)
+    public async Task<List<IUser>> GetUserBySurname(string surname, CancellationToken cancellationToken)
     {
-        _memoryCache.TryGetValue(request.Surname, out List<IUser>? users);
+        _memoryCache.TryGetValue(surname, out List<IUser>? users);
         if (users == null)
         {
-            users = await _userRepository.GetBySurnameAsync(request.Surname, cancellationToken);
+            users = await _userRepository.GetBySurnameAsync(surname, cancellationToken);
             if (users.Count != 0)
             {
                 var options = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10));
-                _memoryCache.Set(request.Surname, users, options);
+                _memoryCache.Set(surname, users, options);
             }
         }
 
@@ -108,7 +101,7 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task<IUser> UpdateUser(IUser request, CancellationToken cancellationToken)
+    public async Task<IUser> UpdateUser(IUserUpdateModel request, CancellationToken cancellationToken)
     {
         var existingUser = _userRepository.GetByIdAsync(request.Id, cancellationToken).Result;
 
@@ -134,15 +127,15 @@ public class UserService : IUserService
         return existingUser;
     }
 
-    public async Task<IUser> DeleteUser(IUser request, CancellationToken cancellationToken)
+    public async Task<IUser> DeleteUser(int id, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
+        var user = await _userRepository.GetByIdAsync(id, cancellationToken);
         if (user == null)
         {
-            throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {request.Id} not found"));
+            throw new RpcException(new Status(StatusCode.NotFound, $"User with ID {id} not found"));
         }
 
-        await _userRepository.DeleteAsync(request.Id, cancellationToken);
+        await _userRepository.DeleteAsync(id, cancellationToken);
 
         return user;
     }

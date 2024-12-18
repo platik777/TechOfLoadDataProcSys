@@ -1,8 +1,6 @@
 ﻿using UserService.Models;
+using UserService.Models.DomainInterfaces;
 
 namespace UserService;
 
-public partial class UpdateUserRequest : IUser
-{
-    public string? Login { get; set; }
-}
+public partial class UpdateUserRequest : IUserUpdateModel;

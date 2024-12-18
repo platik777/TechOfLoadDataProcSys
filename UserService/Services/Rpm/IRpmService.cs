@@ -4,8 +4,8 @@ namespace UserService.Services.Rpm;
 
 public interface IRpmService
 {
-    RpmModel CreateRpm(CreateRpmRequest request);
-    RpmModel GetRpm(GetRpmRequest request);
-    RpmModel UpdateRpm(UpdateRpmRequest request);
-    RpmModel DeleteRpm(DeleteRpmRequest request);
+    IRpmModel CreateRpm(IRpmModel request);
+    IRpmModel GetRpm(long userId, string endpoint);
+    IRpmModel UpdateRpm(IRpmModel request);
+    IRpmModel DeleteRpm(long userId, string endpoint);
 }

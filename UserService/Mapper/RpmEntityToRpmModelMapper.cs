@@ -5,7 +5,8 @@ using UserService.Models.Entities;
 namespace UserService.Mapper;
 
 [Mapper]
+[Obsolete("Not used any more")]
 public partial class RpmEntityToRpmModelMapper
 {
-    public partial RpmModel MapToModel(RpmEntity rpmEntity);
+    public partial IRpmModel MapToModel(RpmEntity rpmEntity);
 }

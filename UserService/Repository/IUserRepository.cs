@@ -1,6 +1,4 @@
-﻿using Grpc.Core;
-using UserService.Database.Entities;
-using UserService.Models;
+﻿using UserService.Models.DomainInterfaces;
 
 namespace UserService.Repository;
 

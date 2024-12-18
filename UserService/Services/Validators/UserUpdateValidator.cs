@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using UserService.Models;
+using UserService.Models.DomainInterfaces;
 
 namespace UserService.Services.Validators;
 

@@ -1,6 +1,6 @@
 ﻿namespace UserService.Models.Entities;
 
-public class RpmEntity
+public class RpmEntity : IRpmModel
 {
     public RpmEntity(long userId, string endpoint, int rpm)
     {
