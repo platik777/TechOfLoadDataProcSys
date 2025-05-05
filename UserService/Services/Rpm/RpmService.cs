@@ -1,37 +1,34 @@
 ﻿using UserService.Models;
 using UserService.Repository.Rpm;
-using RpmDtoToRpmModelMapper = UserService.Mapper.RpmDtoToRpmModelMapper;
 
 namespace UserService.Services.Rpm;
 
 public class RpmService : IRpmService
 {
     private readonly IRpmRepository _rpmRepository;
-    private readonly RpmDtoToRpmModelMapper _mapper;
 
-    public RpmService(IRpmRepository rpmRepository, RpmDtoToRpmModelMapper mapper)
+    public RpmService(IRpmRepository rpmRepository)
     {
         _rpmRepository = rpmRepository;
-        _mapper = mapper;
     }
 
-    public RpmModel CreateRpm(CreateRpmRequest request)
+    public IRpmModel CreateRpm(IRpmModel request)
     {
-        return _rpmRepository.CreateRpm(_mapper.CreateDtoMapToRpmModel(request));
+        return _rpmRepository.CreateRpm(request);
     }
 
-    public RpmModel GetRpm(GetRpmRequest request)
+    public IRpmModel GetRpm(long userId, string endpoint)
     {
-        return _rpmRepository.GetRpm(request.UserId, request.Endpoint);
+        return _rpmRepository.GetRpm(userId, endpoint);
     }
 
-    public RpmModel UpdateRpm(UpdateRpmRequest request)
+    public IRpmModel UpdateRpm(IRpmModel request)
     {
-        return _rpmRepository.UpdateRpm(_mapper.UpdateDtoMapToRpmModel(request));
+        return _rpmRepository.UpdateRpm(request);
     }
 
-    public RpmModel DeleteRpm(DeleteRpmRequest request)
+    public IRpmModel DeleteRpm(long userId, string endpoint)
     {
-        return _rpmRepository.DeleteRpm(request.UserId, request.Endpoint);
+        return _rpmRepository.DeleteRpm(userId, endpoint);
     }
 }

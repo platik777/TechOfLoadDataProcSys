@@ -3,7 +3,5 @@
 namespace UserService.Mapper;
 
 [Mapper]
-public partial class RpmModelToRpmEntityMapper
-{
-    
-}
+[Obsolete("Not used any more")]
+public partial class RpmModelToRpmEntityMapper;

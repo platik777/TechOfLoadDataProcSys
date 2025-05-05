@@ -1,15 +1,14 @@
 ﻿using FluentValidation;
 using UserService.Controllers;
+using UserService.Interceptors;
 using UserService.Mapper;
-using UserService.Models;
+using UserService.Models.DomainInterfaces;
 using UserService.Repository;
 using UserService.Repository.Rpm;
 using UserService.Services.Kafka;
+using UserService.Services.Redis;
 using UserService.Services.Rpm;
 using UserService.Services.Validators;
-using RpmDtoToRpmModelMapper = UserService.Mapper.RpmDtoToRpmModelMapper;
-using RpmEntityToRpmModelMapper = UserService.Mapper.RpmEntityToRpmModelMapper;
-using RpmModelToRpmEntityMapper = UserService.Mapper.RpmModelToRpmEntityMapper;
 
 namespace UserService.Services;
 
@@ -22,18 +21,23 @@ public class Startup
         
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton<DbService>();
-        services.AddSingleton<IValidator<User>, UserCreateValidator>();
-        services.AddSingleton<IValidator<User>, UserUpdateValidator>();
+        services.AddSingleton<IValidator<IUser>, UserCreateValidator>();
+        services.AddSingleton<IValidator<IUser>, UserUpdateValidator>();
         services.AddSingleton<IUserToUserReplyMapper, UserToUserReplyMapper>();
-        services.AddSingleton<IUserEntityToUserMapper, UserEntityToUserMapper>();
-        services.AddSingleton<ICreateUserRequestToUserMapper, CreateUserRequestToUserMapper>();
         services.AddScoped<IUserService, UserService>();
         
         services.AddSingleton<IRpmService, Rpm.RpmService>();
         services.AddSingleton<IRpmRepository, RpmRepository>();
-        services.AddSingleton<RpmEntityToRpmModelMapper>();
-        services.AddSingleton<RpmModelToRpmEntityMapper>();
-        services.AddSingleton<RpmDtoToRpmModelMapper>();
+        services.AddMemoryCache();
+        
+        services.AddSingleton<IRedisService, RedisService>();
+        
+        services.AddSingleton<AuthInterceptor>();
+        services.AddGrpc(options =>
+        {
+            
+            options.Interceptors.Add<AuthInterceptor>();
+        });
         
         services.AddSingleton<KafkaHostedService>(provider =>
         {

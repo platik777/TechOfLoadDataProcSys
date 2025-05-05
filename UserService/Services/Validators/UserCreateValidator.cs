@@ -1,9 +1,10 @@
 ﻿using FluentValidation;
 using UserService.Models;
+using UserService.Models.DomainInterfaces;
 
 namespace UserService.Services.Validators;
 
-public class UserCreateValidator : AbstractValidator<User>
+public class UserCreateValidator : AbstractValidator<IUser>
 {
     public UserCreateValidator()
     {

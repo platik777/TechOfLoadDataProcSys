@@ -1,9 +1,6 @@
-﻿using UserService.Models;
-using UserService.Models.DomainInterfaces;
+﻿namespace UserService.Models.DomainInterfaces;
 
-namespace UserService.Database.Entities;
-
-public class UserEntity : IUser
+public interface IUser
 {
     public int Id { get; set; }
     public string? Login { get; set; }

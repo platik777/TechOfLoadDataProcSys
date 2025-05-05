@@ -1,8 +1,10 @@
 using UserService.Models;
+using UserService.Models.DomainInterfaces;
 
 namespace UserService.Mapper;
 
+
 public interface IUserToUserReplyMapper
 {
-    UserReply MapToUserReply(User user);
+    UserReply MapToUserReply(IUser user);
 }

@@ -9,16 +9,14 @@ namespace UserService.Repository.Rpm;
 public class RpmRepository : IRpmRepository
 {
     private readonly ConcurrentDictionary<string, RpmEntity> _storage = new();
-    private readonly RpmEntityToRpmModelMapper _mapper;
     private readonly KafkaHostedService _kafkaHostedService;
 
-    public RpmRepository(RpmEntityToRpmModelMapper mapper, KafkaHostedService kafkaHostedService)
+    public RpmRepository(KafkaHostedService kafkaHostedService)
     {
-        _mapper = mapper;
         _kafkaHostedService = kafkaHostedService;
     }
 
-    public RpmModel CreateRpm(RpmModel rpmModel)
+    public IRpmModel CreateRpm(IRpmModel rpmModel)
     {
         string key = GenerateKey(rpmModel.UserId, rpmModel.Endpoint);
         var entity = new RpmEntity(rpmModel.UserId, rpmModel.Endpoint, rpmModel.Rpm);
@@ -34,10 +32,10 @@ public class RpmRepository : IRpmRepository
             Endpoint = rpmModel.Endpoint
         });
 
-        return _mapper.MapToModel(entity);
+        return entity;
     }
 
-    public RpmModel GetRpm(string userId, string route)
+    public IRpmModel GetRpm(long userId, string route)
     {
         string key = GenerateKey(userId, route);
 
@@ -46,10 +44,10 @@ public class RpmRepository : IRpmRepository
             throw new KeyNotFoundException("Rpm record not found.");
         }
 
-        return _mapper.MapToModel(entity);
+        return entity;
     }
 
-    public RpmModel UpdateRpm(RpmModel rpmModel)
+    public IRpmModel UpdateRpm(IRpmModel rpmModel)
     {
         string key = GenerateKey(rpmModel.UserId, rpmModel.Endpoint);
 
@@ -67,10 +65,10 @@ public class RpmRepository : IRpmRepository
             Endpoint = rpmModel.Endpoint
         });
 
-        return _mapper.MapToModel(entity);
+        return entity;
     }
 
-    public RpmModel DeleteRpm(string userId, string route)
+    public IRpmModel DeleteRpm(long userId, string route)
     {
         string key = GenerateKey(userId, route);
 
@@ -81,8 +79,8 @@ public class RpmRepository : IRpmRepository
 
         _kafkaHostedService.RemoveTask(key);
 
-        return _mapper.MapToModel(entity);
+        return entity;
     }
 
-    private static string GenerateKey(string userId, string route) => $"{userId}_{route}";
+    private static string GenerateKey(long userId, string route) => $"{userId}_{route}";
 }

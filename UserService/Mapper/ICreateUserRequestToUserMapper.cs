@@ -1,8 +1,9 @@
-using UserService.Models;
+using UserService.Models.DomainInterfaces;
 
 namespace UserService.Mapper;
 
+[Obsolete("Not used any more")]
 public interface ICreateUserRequestToUserMapper
 { 
-    User CreateUserRequestToUser(CreateUserRequest user);
+    IUser CreateUserRequestToUser(CreateUserRequest user);
 }

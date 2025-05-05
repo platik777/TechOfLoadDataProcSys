@@ -1,12 +1,8 @@
-﻿using UserService.Models;
-using UserService.Models.DomainInterfaces;
+﻿namespace UserService.Models.DomainInterfaces;
 
-namespace UserService.Database.Entities;
-
-public class UserEntity : IUser
+public interface IUserUpdateModel
 {
     public int Id { get; set; }
-    public string? Login { get; set; }
     public string? Password { get; set; }
     public string? Name { get; set; }
     public string? Surname { get; set; }

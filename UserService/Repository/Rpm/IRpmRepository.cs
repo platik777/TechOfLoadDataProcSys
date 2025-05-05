@@ -4,8 +4,8 @@ namespace UserService.Repository.Rpm;
 
 public interface IRpmRepository
 {
-    RpmModel CreateRpm(RpmModel rpmModel);
-    RpmModel GetRpm(string userId, string route);
-    RpmModel UpdateRpm(RpmModel rpmModel);
-    RpmModel DeleteRpm(string userId, string route);
+    IRpmModel CreateRpm(IRpmModel rpmModel);
+    IRpmModel GetRpm(long userId, string route);
+    IRpmModel UpdateRpm(IRpmModel rpmModel);
+    IRpmModel DeleteRpm(long userId, string route);
 }
